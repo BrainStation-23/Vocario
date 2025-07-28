@@ -2,22 +2,30 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/core/services/storage_service.dart';
+import 'package:vocario/core/constants/app_constants.dart';
 
 class GeminiApiService {
   static const String _baseUrl = 'https://generativelanguage.googleapis.com';
-  static const String _apiKey = ''; // TODO: Move to environment variables
   
   final Dio _dio;
 
   GeminiApiService() : _dio = Dio() {
     _dio.options.baseUrl = _baseUrl;
-    _dio.options.headers = {
-      'x-goog-api-key': _apiKey,
-    };
+  }
+
+  Future<void> _ensureApiKeySet() async {
+    final apiKey = await StorageService.getApiKey();
+    if (apiKey == null || apiKey.isEmpty) {
+      throw Exception('API key not found. Please set your Gemini API key in settings.');
+    }
+    _dio.options.headers['x-goog-api-key'] = apiKey;
   }
 
   Future<String> uploadAudioFile(String filePath) async {
     try {
+      await _ensureApiKeySet();
+      
       final file = File(filePath);
       if (!await file.exists()) {
         throw Exception('Audio file not found: $filePath');
@@ -82,6 +90,8 @@ class GeminiApiService {
 
   Future<Map<String, dynamic>> generateContent(String fileUri, String mimeType) async {
     try {
+      await _ensureApiKeySet();
+      
       LoggerService.info('Generating content for file: $fileUri');
       
       final response = await _dio.post(

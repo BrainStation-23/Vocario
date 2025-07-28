@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vocario/core/services/storage_service.dart';
+import 'package:vocario/core/constants/app_constants.dart';
 import 'package:vocario/presentation/screens/settings/widgets/settings_widgets.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -17,10 +19,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _emailController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _loadSavedApiKey();
+  }
+
+  @override
   void dispose() {
     _apiKeyController.dispose();
     _emailController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadSavedApiKey() async {
+    final savedApiKey = await StorageService.getApiKey();
+    if (savedApiKey != null && mounted) {
+      _apiKeyController.text = savedApiKey;
+    }
   }
 
   Future<void> _launchURL(String url) async {
@@ -64,6 +79,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ApiKeySection(
                         controller: _apiKeyController,
                         onLaunchURL: _launchURL,
+                        onApiKeySaved: () {
+                          // No op
+                        },
                       ),
                       const SizedBox(height: 16),
                       EmailSection(controller: _emailController),

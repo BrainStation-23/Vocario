@@ -159,4 +159,21 @@ class StorageService {
   static Future<String?> getUserPreferences() async {
     return await getString(AppConstants.userPreferencesKey);
   }
+
+  // API key storage methods
+  static Future<void> saveApiKey(String apiKey) async {
+    await saveString(AppConstants.apiKeyKey, apiKey);
+  }
+
+  static Future<String?> getApiKey() async {
+    return await getString(AppConstants.apiKeyKey);
+  }
+
+  static Future<void> removeApiKey() async {
+    await remove(AppConstants.apiKeyKey);
+  }
+
+  static Future<bool> hasApiKey() async {
+    return await containsKey(AppConstants.apiKeyKey);
+  }
 }

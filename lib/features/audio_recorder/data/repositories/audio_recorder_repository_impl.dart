@@ -18,6 +18,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   String? _currentFilePath;
   static const int maxFileSizeBytes = 20 * 1024 * 1024; // 20MB
   bool _isInitialized = false;
+  bool _isRecording = false;
 
   @override
   Future<bool> hasPermission() async {
@@ -60,6 +61,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
         sampleRate: 44100,
       );
       
+      _isRecording = true;
       _currentFilePath = filePath;
       _startTimers();
       
@@ -75,6 +77,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   Future<AudioRecording?> stopRecording() async {
     try {
       await _recorder.stopRecorder();
+      _isRecording = false;
       _stopTimers();
       
       if (_currentFilePath != null) {
@@ -89,6 +92,8 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
           fileSizeBytes: fileSize,
           isRecording: false,
         );
+        
+        // Recording file is automatically saved to disk by flutter_sound
         
         _currentDuration = Duration.zero;
         final stoppedFilePath = _currentFilePath;
@@ -107,7 +112,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   @override
   Future<bool> isRecording() async {
     try {
-      return _recorder.isRecording;
+      return _isRecording && _recorder.isRecording;
     } catch (e) {
       LoggerService.error('Failed to check recording status', e);
       return false;
@@ -118,6 +123,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   Future<void> cancelRecording() async {
     try {
       await _recorder.stopRecorder();
+      _isRecording = false;
       _stopTimers();
       
       if (_currentFilePath != null) {
@@ -178,6 +184,104 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
     _durationTimer = null;
     _fileSizeTimer = null;
   }
+
+  @override
+  Future<List<AudioRecording>> getAllRecordings() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final recordingFiles = directory
+          .listSync()
+          .where((entity) => entity is File && entity.path.endsWith('.aac'))
+          .cast<File>()
+          .toList();
+      
+      final recordings = <AudioRecording>[];
+      
+      for (final file in recordingFiles) {
+        try {
+          final fileName = file.path.split('/').last;
+          
+          // Extract timestamp from filename (recording_{timestamp}.aac)
+          final timestampMatch = RegExp(r'recording_(\d+)\.aac').firstMatch(fileName);
+          if (timestampMatch == null) continue;
+          
+          final timestamp = int.parse(timestampMatch.group(1)!);
+          final createdAt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+          
+          // Get file stats
+          final fileStat = await file.stat();
+          final fileSize = fileStat.size;
+          
+          // Try to get duration from metadata or estimate based on file size
+          // For AAC files, rough estimation: ~128kbps = 16KB/s
+          final estimatedDurationSeconds = (fileSize / 16000).round();
+          final duration = Duration(seconds: estimatedDurationSeconds);
+          
+          final recording = AudioRecordingModel(
+            id: timestamp.toString(),
+            filePath: file.path,
+            createdAt: createdAt,
+            duration: duration,
+            fileSizeBytes: fileSize,
+            isRecording: false,
+          );
+          
+          recordings.add(recording);
+        } catch (e) {
+          LoggerService.error('Failed to process recording file: ${file.path}', e);
+        }
+      }
+      
+      // Sort by creation date (newest first)
+      recordings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      return recordings;
+    } catch (e) {
+      LoggerService.error('Failed to get all recordings from disk', e);
+      return [];
+    }
+  }
+
+  @override
+  Future<AudioRecording?> getRecordingById(String id) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final expectedFileName = 'recording_$id.aac';
+      final filePath = '${directory.path}/$expectedFileName';
+      final file = File(filePath);
+      
+      if (!await file.exists()) {
+        LoggerService.info('Recording file not found: $filePath');
+        return null;
+      }
+      
+      final timestamp = int.parse(id);
+      final createdAt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      
+      // Get file stats
+      final fileStat = await file.stat();
+      final fileSize = fileStat.size;
+      
+      // Estimate duration based on file size
+      // For AAC files, rough estimation: ~128kbps = 16KB/s
+      final estimatedDurationSeconds = (fileSize / 16000).round();
+      final duration = Duration(seconds: estimatedDurationSeconds);
+      
+      return AudioRecordingModel(
+        id: id,
+        filePath: filePath,
+        createdAt: createdAt,
+        duration: duration,
+        fileSizeBytes: fileSize,
+        isRecording: false,
+      );
+    } catch (e) {
+      LoggerService.error('Failed to get recording by id: $id', e);
+      return null;
+    }
+  }
+
+
 
   void dispose() {
     _stopTimers();

@@ -5,6 +5,8 @@ import 'package:vocario/presentation/screens/splash/splash_screen.dart';
 import 'package:vocario/presentation/screens/settings/settings_screen.dart';
 import 'package:vocario/presentation/screens/about/about_screen.dart';
 import 'package:vocario/presentation/screens/licensing/licensing_screen.dart';
+import 'package:vocario/presentation/screens/summaries/summaries_screen.dart';
+import 'package:vocario/presentation/screens/summaries/summary_details_screen.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -14,6 +16,8 @@ class AppRouter {
   static const String profile = '/profile';
   static const String about = '/about';
   static const String licensing = '/licensing';
+  static const String summaries = '/summaries';
+  static const String summaryDetails = '/summaries/:id';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -51,6 +55,19 @@ class AppRouter {
         path: licensing,
         name: 'licensing',
         builder: (context, state) => const LicensingScreen(),
+      ),
+      GoRoute(
+        path: summaries,
+        name: 'summaries',
+        builder: (context, state) => const SummariesScreen(),
+      ),
+      GoRoute(
+        path: summaryDetails,
+        name: 'summaryDetails',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return SummaryDetailsScreen(recordingId: id);
+        },
       ),
       GoRoute(
         path: profile,

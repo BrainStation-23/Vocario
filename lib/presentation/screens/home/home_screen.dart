@@ -4,6 +4,7 @@ import 'package:vocario/core/theme/app_text_styles.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/constants/app_constants.dart';
 import 'package:vocario/presentation/screens/home/widgets/home_widgets.dart';
+import 'package:vocario/features/audio_recorder/presentation/widgets/animated_recording_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Center(
-                      child: ActionButtons(),
+                      child: const AnimatedRecordingButton(),
                     ),
                   ),
                   Padding(

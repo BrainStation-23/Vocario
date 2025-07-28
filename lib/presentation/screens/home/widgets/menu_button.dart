@@ -34,6 +34,9 @@ class MenuButton extends StatelessWidget {
         ),
         onSelected: (String value) {
           switch (value) {
+            case 'summaries':
+              context.push(AppRouter.summaries);
+              break;
             case 'settings':
               context.push(AppRouter.settings);
               break;
@@ -46,6 +49,14 @@ class MenuButton extends StatelessWidget {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          const PopupMenuItem<String>(
+            value: 'summaries',
+            child: ListTile(
+              leading: Icon(Icons.summarize),
+              title: Text('Summaries'),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
           const PopupMenuItem<String>(
             value: 'settings',
             child: ListTile(

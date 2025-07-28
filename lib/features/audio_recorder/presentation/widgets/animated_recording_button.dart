@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vocario/core/theme/app_colors.dart';
+import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
 
 class AnimatedRecordingButton extends ConsumerStatefulWidget {
@@ -70,6 +71,7 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
     final appColors = Theme.of(context).extension<AppColors>()!;
     final recording = ref.watch(audioRecorderNotifierProvider);
     final isRecording = recording?.isRecording ?? false;
+    final recordingDuration = recording?.duration ?? Duration.zero;
 
     if (isRecording && !_pulseController.isAnimating) {
       _startAnimations();
@@ -78,50 +80,89 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
     }
 
     return Center(
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_pulseAnimation, _waveAnimation]),
-        builder: (context, child) {
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              if (isRecording) ..._buildSoundWaves(appColors),
-              Transform.scale(
-                scale: isRecording ? _pulseAnimation.value : 1.0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: isRecording
-                          ? [Colors.red.shade400, Colors.red.shade600]
-                          : [
-                              appColors.micButtonGradientStart,
-                              appColors.micButtonGradientEnd,
-                            ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(50),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedBuilder(
+            animation: Listenable.merge([_pulseAnimation, _waveAnimation]),
+            builder: (context, child) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (isRecording) ..._buildSoundWaves(appColors),
+                  Transform.scale(
+                    scale: isRecording ? _pulseAnimation.value : 1.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: isRecording
+                              ? [Colors.red.shade400, Colors.red.shade600]
+                              : [
+                                  appColors.micButtonGradientStart,
+                                  appColors.micButtonGradientEnd,
+                                ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: IconButton(
-                    onPressed: () => ref.read(audioRecorderNotifierProvider.notifier).toggleRecording(),
-                    icon: Icon(
-                      isRecording ? Icons.stop : Icons.mic,
-                      size: 70,
-                      color: Colors.white,
+                      child: IconButton(
+                        onPressed: () => ref.read(audioRecorderNotifierProvider.notifier).toggleRecording(),
+                        icon: Icon(
+                          isRecording ? Icons.stop : Icons.mic,
+                          size: 70,
+                          color: Colors.white,
+                        ),
+                        iconSize: 120,
+                      ),
                     ),
-                    iconSize: 120,
                   ),
+                ],
+              );
+            },
+          ),
+          if (isRecording) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.red.withValues(alpha: 0.3),
+                  width: 1,
                 ),
               ),
-            ],
-          );
-        },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.fiber_manual_record,
+                    color: Colors.red,
+                    size: 12,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    FormatUtils.formatDuration(recordingDuration),
+                    style: TextStyle(
+                      color: Colors.red.shade700,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
@@ -69,9 +70,42 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
   @override
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).extension<AppColors>()!;
-    final recording = ref.watch(audioRecorderNotifierProvider);
-    final isRecording = recording?.isRecording ?? false;
-    final recordingDuration = recording?.duration ?? Duration.zero;
+    final recorderState = ref.watch(audioRecorderNotifierProvider);
+    final isRecording = recorderState.state == RecorderState.recording;
+    final isAnalyzing = recorderState.state == RecorderState.analyzing;
+    final recordingDuration = recorderState.recording?.duration ?? Duration.zero;
+
+    // Handle navigation when analysis is completed and show error snackbar on failure
+    ref.listen(audioRecorderNotifierProvider, (previous, next) {
+      if (previous?.state != RecorderState.completed && 
+          next.state == RecorderState.completed &&
+          next.recording != null) {
+        context.go('/home/summaries/${next.recording!.id}');
+      }
+      
+      // Show error snackbar when analysis fails
+      if (previous?.state != RecorderState.error && 
+          next.state == RecorderState.error &&
+          next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Analysis failed: ${next.errorMessage}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red.shade600,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      }
+    });
 
     if (isRecording && !_pulseController.isAnimating) {
       _startAnimations();
@@ -97,10 +131,12 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
                         gradient: LinearGradient(
                           colors: isRecording
                               ? [Colors.red.shade400, Colors.red.shade600]
-                              : [
-                                  appColors.micButtonGradientStart,
-                                  appColors.micButtonGradientEnd,
-                                ],
+                              : isAnalyzing
+                                  ? [Colors.orange.shade400, Colors.orange.shade600]
+                                  : [
+                                      appColors.micButtonGradientStart,
+                                      appColors.micButtonGradientEnd,
+                                    ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -114,12 +150,21 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
                         ],
                       ),
                       child: IconButton(
-                        onPressed: () => ref.read(audioRecorderNotifierProvider.notifier).toggleRecording(),
-                        icon: Icon(
-                          isRecording ? Icons.stop : Icons.mic,
-                          size: 70,
-                          color: Colors.white,
-                        ),
+                        onPressed: isAnalyzing ? null : () => ref.read(audioRecorderNotifierProvider.notifier).toggleRecording(),
+                        icon: isAnalyzing 
+                            ? const SizedBox(
+                                width: 70,
+                                height: 70,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 4,
+                                ),
+                              )
+                            : Icon(
+                                isRecording ? Icons.stop : Icons.mic,
+                                size: 70,
+                                color: Colors.white,
+                              ),
                         iconSize: 120,
                       ),
                     ),
@@ -128,36 +173,60 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
               );
             },
           ),
-          if (isRecording) ...[
+          if (isRecording || isAnalyzing) ...[
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: isAnalyzing 
+                    ? Colors.orange.withValues(alpha: 0.1)
+                    : Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.3),
+                  color: isAnalyzing 
+                      ? Colors.orange.withValues(alpha: 0.3)
+                      : Colors.red.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.fiber_manual_record,
-                    color: Colors.red,
-                    size: 12,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    FormatUtils.formatDuration(recordingDuration),
-                    style: TextStyle(
-                      color: Colors.red.shade700,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      fontFeatures: const [FontFeature.tabularFigures()],
+                  if (isAnalyzing) ...[
+                    SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                        color: Colors.orange.shade700,
+                        strokeWidth: 2,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Analyzing...',
+                      style: TextStyle(
+                        color: Colors.orange.shade700,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ] else ...[
+                    Icon(
+                      Icons.fiber_manual_record,
+                      color: Colors.red,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      FormatUtils.formatDuration(recordingDuration),
+                      style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

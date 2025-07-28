@@ -84,10 +84,18 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
         final file = File(_currentFilePath!);
         final fileSize = await file.length();
         
+        // Extract timestamp from filename to maintain consistent ID
+        final fileName = _currentFilePath!.split('/').last;
+        final timestampMatch = RegExp(r'recording_(\d+)\.aac').firstMatch(fileName);
+        final recordingId = timestampMatch?.group(1) ?? DateTime.now().millisecondsSinceEpoch.toString();
+        final createdAt = timestampMatch != null 
+            ? DateTime.fromMillisecondsSinceEpoch(int.parse(timestampMatch.group(1)!))
+            : DateTime.now();
+        
         final recording = AudioRecordingModel(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: recordingId,
           filePath: _currentFilePath!,
-          createdAt: DateTime.now(),
+          createdAt: createdAt,
           duration: _currentDuration,
           fileSizeBytes: fileSize,
           isRecording: false,
@@ -282,6 +290,26 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   }
 
 
+
+  @override
+  Future<void> deleteRecording(String id) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = 'recording_$id.aac';
+      final filePath = '${directory.path}/$fileName';
+      final file = File(filePath);
+      
+      if (await file.exists()) {
+        await file.delete();
+        LoggerService.info('Recording file deleted: $filePath');
+      } else {
+        LoggerService.warning('Recording file not found for deletion: $filePath');
+      }
+    } catch (e) {
+      LoggerService.error('Failed to delete recording: $id', e);
+      rethrow;
+    }
+  }
 
   void dispose() {
     _stopTimers();

@@ -11,4 +11,5 @@ abstract class AudioRecorderRepository {
   Stream<int> getRecordingFileSize();
   Future<List<AudioRecording>> getAllRecordings();
   Future<AudioRecording?> getRecordingById(String id);
+  Future<void> deleteRecording(String id);
 }

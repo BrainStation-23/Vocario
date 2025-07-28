@@ -7,17 +7,18 @@ import 'package:vocario/presentation/screens/about/about_screen.dart';
 import 'package:vocario/presentation/screens/licensing/licensing_screen.dart';
 import 'package:vocario/presentation/screens/summaries/summaries_screen.dart';
 import 'package:vocario/presentation/screens/summaries/summary_details_screen.dart';
+import 'package:vocario/presentation/screens/summaries/providers/summaries_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppRouter {
   static const String splash = '/';
   static const String home = '/home';
   static const String audioSummarizer = '/audio-summarizer';
   static const String settings = '/settings';
-  static const String profile = '/profile';
   static const String about = '/about';
   static const String licensing = '/licensing';
-  static const String summaries = '/summaries';
-  static const String summaryDetails = '/summaries/:id';
+  static const String summaries = '/home/summaries';
+  static const String summaryDetails = '/home/summaries/:id';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -31,6 +32,23 @@ class AppRouter {
         path: home,
         name: 'home',
         builder: (context, state) => const HomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'summaries',
+            name: 'summaries',
+            builder: (context, state) => const SummariesScreen(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                name: 'summaryDetails',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return SummaryDetailsScreen(recordingId: id);
+                },
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: audioSummarizer,
@@ -55,28 +73,6 @@ class AppRouter {
         path: licensing,
         name: 'licensing',
         builder: (context, state) => const LicensingScreen(),
-      ),
-      GoRoute(
-        path: summaries,
-        name: 'summaries',
-        builder: (context, state) => const SummariesScreen(),
-      ),
-      GoRoute(
-        path: summaryDetails,
-        name: 'summaryDetails',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return SummaryDetailsScreen(recordingId: id);
-        },
-      ),
-      GoRoute(
-        path: profile,
-        name: 'profile',
-        builder: (context, state) => const Placeholder(
-          child: Center(
-            child: Text('Profile Screen'),
-          ),
-        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

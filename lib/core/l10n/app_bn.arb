@@ -1,0 +1,82 @@
+{
+  "welcomeTitle": "ভোকারিওতে স্বাগতম",
+  "@welcomeTitle": {
+    "description": "Welcome title on home screen"
+  },
+  "welcomeSubtitle": "আপনার হাতের মুঠোয় এআই-চালিত অডিও সারসংক্ষেপ",
+  "@welcomeSubtitle": {
+    "description": "Welcome subtitle on home screen"
+  },
+  "importAudio": "অডিও ইম্পোর্ট",
+  "@importAudio": {
+    "description": "Import audio button text"
+  },
+  "importVideo": "ভিডিও ইম্পোর্ট",
+  "@importVideo": {
+    "description": "Import video button text"
+  },
+  "settings": "সেটিংস",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "appearance": "থিম",
+  "@appearance": {
+    "description": "Appearance section title"
+  },
+  "darkMode": "ডার্ক মোড",
+  "@darkMode": {
+    "description": "Dark mode toggle label"
+  },
+  "language": "ভাষা",
+  "@language": {
+    "description": "Language section title"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "bengali": "বাংলা (Bangla)",
+  "@bengali": {
+    "description": "Bengali language option"
+  },
+  "settingsSubtitle": "আপনার অ্যাপের পছন্দগুলি কনফিগার করুন",
+  "@settingsSubtitle": {
+    "description": "Settings screen subtitle"
+  },
+  "emailAddress": "ইমেইল (ঐচ্ছিক)",
+  "@emailAddress": {
+    "description": "Email section title"
+  },
+  "emailHint": "your.email@example.com",
+  "@emailHint": {
+    "description": "Email input hint text"
+  },
+  "emailDescription": "মিটিং সারাংশ শেয়ার করার সময় আপনার ইমেইল প্রি-ফিল করুন",
+  "@emailDescription": {
+    "description": "Email section description"
+  },
+  "geminiApiKey": "জেমিনি এপিআই কী",
+  "@geminiApiKey": {
+    "description": "API key section title"
+  },
+  "apiKeyHint": "আপনার জেমিনি এপিআই কী লিখুন",
+  "@apiKeyHint": {
+    "description": "API key input hint text"
+  },
+  "getApiKey": "গুগল এআই স্টুডিও থেকে আপনার এপিআই কী নিন",
+  "@getApiKey": {
+    "description": "API key link text"
+  },
+  "apiKeyInfo": "আপনার এপিআই কী আপনার ডিভাইসে স্থানীয়ভাবে সংরক্ষিত এবং কখনো শেয়ার করা হয় না। মিটিং সারাংশ তৈরির জন্য এটি প্রয়োজনীয়।",
+  "@apiKeyInfo": {
+    "description": "API key information text"
+  },
+  "importAudioFeatureComingSoon": "অডিও ইম্পোর্ট শীঘ্রই আসছে!",
+  "@importAudioFeatureComingSoon": {
+    "description": "Snackbar message for import audio"
+  },
+  "importVideoFeatureComingSoon": "ভিডিও ইম্পোর্ট শীঘ্রই আসছে!",
+  "@importVideoFeatureComingSoon": {
+    "description": "Snackbar message for import video"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "welcomeTitle": "Welcome to Vocario",
+  "@welcomeTitle": {
+    "description": "Welcome title on home screen"
+  },
+  "welcomeSubtitle": "AI-powered audio summarization at your fingertips",
+  "@welcomeSubtitle": {
+    "description": "Welcome subtitle on home screen"
+  },
+  "importAudio": "Import Audio",
+  "@importAudio": {
+    "description": "Import audio button text"
+  },
+  "importVideo": "Import Video",
+  "@importVideo": {
+    "description": "Import video button text"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Appearance section title"
+  },
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark mode toggle label"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language section title"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "bengali": "বাংলা (Bengali)",
+  "@bengali": {
+    "description": "Bengali language option"
+  },
+  "settingsSubtitle": "Configure your app preferences",
+  "@settingsSubtitle": {
+    "description": "Settings screen subtitle"
+  },
+  "emailAddress": "Email Address (Optional)",
+  "@emailAddress": {
+    "description": "Email section title"
+  },
+  "emailHint": "your.email@example.com",
+  "@emailHint": {
+    "description": "Email input hint text"
+  },
+  "emailDescription": "Pre-fill your email when sharing meeting summaries",
+  "@emailDescription": {
+    "description": "Email section description"
+  },
+  "geminiApiKey": "Gemini API Key",
+  "@geminiApiKey": {
+    "description": "API key section title"
+  },
+  "apiKeyHint": "Enter your Gemini API key",
+  "@apiKeyHint": {
+    "description": "API key input hint text"
+  },
+  "getApiKey": "Get your API key from Google AI Studio",
+  "@getApiKey": {
+    "description": "API key link text"
+  },
+  "apiKeyInfo": "Your API key is stored locally on your device and never shared. It's required for generating meeting summaries.",
+  "@apiKeyInfo": {
+    "description": "API key information text"
+  },
+  "importAudioFeatureComingSoon": "Import Audio feature coming soon!",
+  "@importAudioFeatureComingSoon": {
+    "description": "Snackbar message for import audio"
+  },
+  "importVideoFeatureComingSoon": "Import Video feature coming soon!",
+  "@importVideoFeatureComingSoon": {
+    "description": "Snackbar message for import video"
+  }
+}

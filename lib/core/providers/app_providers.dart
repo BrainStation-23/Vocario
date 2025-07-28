@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:vocario/core/services/storage_service.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
 
 // Theme Mode Provider
 final themeModeNotifierProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {

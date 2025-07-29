@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/core/services/storage_service.dart';
-import 'package:vocario/core/constants/app_constants.dart';
 import 'package:vocario/presentation/screens/settings/widgets/settings_widgets.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -38,60 +36,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final appColors = Theme.of(context).extension<AppColors>()!;
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              appColors.gradientStart,
-              appColors.gradientEnd,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SettingsHeader(),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      const AppearanceSection(),
-                      const SizedBox(height: 16),
-                      const LanguageSection(),
-                      const SizedBox(height: 16),
-                      ApiKeySection(
-                        controller: _apiKeyController,
-                        onLaunchURL: _launchURL,
-                        onApiKeySaved: () {
-                          // No op
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      EmailSection(controller: _emailController),
-                      const SizedBox(height: 32),
-                    ],
+      appBar: AppBar(
+        title: Text(localizations.settings),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                children: [
+                  const AppearanceSection(),
+                  const SizedBox(height: 16),
+                  // const LanguageSection(),
+                  // const SizedBox(height: 16),
+                  ApiKeySection(
+                    controller: _apiKeyController,
+                    onLaunchURL: context.launchURL,
+                    onApiKeySaved: () {
+                      // No op
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  // EmailSection(controller: _emailController),
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

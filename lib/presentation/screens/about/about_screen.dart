@@ -1,90 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocario/presentation/screens/about/providers/about_data_provider.dart';
+import 'package:vocario/presentation/screens/about/widgets/company_header.dart';
+import 'package:vocario/presentation/screens/about/widgets/about_section.dart';
+import 'package:vocario/presentation/screens/about/widgets/contact_section.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
 
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final aboutData = ref.watch(aboutDataProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('About Us'),
-        backgroundColor: const Color(0xFF8B5CF6),
-        foregroundColor: Colors.white,
       ),
-      body: Center(
-        child: Placeholder(
-          child: Text(
-            'Add page content here',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CompanyHeader(aboutData: aboutData),
+            const SizedBox(height: 32),
+            
+            AboutSection(
+              title: 'Our Mission',
+              content: aboutData.mission,
+              icon: Icons.flag,
+            ),
+            
+            AboutSection(
+              title: 'Our Vision',
+              content: aboutData.vision,
+              icon: Icons.visibility,
+            ),
+            
+            AboutSection(
+              title: 'Why We Built Vocario',
+              content: aboutData.appPurpose,
+              icon: Icons.mic,
+            ),
+            
+            ContactSection(aboutData: aboutData),
+            
+            const SizedBox(height: 32),
+            
+            Center(
+              child: Text(
+                aboutData.copyright,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
-}
-
-class _FeatureItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-
-  const _FeatureItem({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              color: const Color(0xFF8B5CF6),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

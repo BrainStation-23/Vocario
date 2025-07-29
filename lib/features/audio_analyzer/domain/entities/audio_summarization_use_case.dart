@@ -1,6 +1,3 @@
-const outputFormatInstructions = 'IMPORTANT: Return ONLY valid HTML formatted text with proper HTML tags. Use basic HTML tags like <h1>, <h2>, <p>, <ul>, <li>, <strong>, <em> for formatting. Do NOT use markdown - only HTML tags.Do not include any prefixes like "html" or "markdown" in your response. Start your response directly with the relevant HTML tags.';
-
-
 enum AudioSummarizationUseCase {
   doctorVisit(
     '''You are an expert medical transcriptionist. Please analyze this audio recording of a doctor-patient consultation and provide a comprehensive summary that includes:
@@ -13,8 +10,7 @@ enum AudioSummarizationUseCase {
 6. **Treatment Plan**: Medications, procedures, or recommendations
 7. **Follow-up**: Any scheduled appointments or instructions
 
-Please maintain medical accuracy and use appropriate medical terminology. Organize the information clearly and ensure patient confidentiality by focusing on medical facts rather than personal identifiers.
-$outputFormatInstructions''',
+Please maintain medical accuracy and use appropriate medical terminology. Format the response in a clear, professional manner suitable for sharing with others.''',
   ),
   
   meetingMinutes(
@@ -27,8 +23,7 @@ $outputFormatInstructions''',
 5. **Next Steps**: Follow-up actions and future meeting plans
 6. **Important Announcements**: Any significant announcements made
 
-Structure the minutes professionally with clear headings and bullet points. Focus on actionable items and key outcomes rather than verbatim transcription.
-$outputFormatInstructions''',
+Structure the minutes professionally with clear headings and bullet points. Focus on actionable items and key outcomes rather than verbatim transcription. Format the response in a clear, professional manner suitable for sharing with colleagues.''',
   ),
   
   lectureSummary(
@@ -42,8 +37,7 @@ $outputFormatInstructions''',
 6. **Conclusions**: Key takeaways and summary points
 7. **Study Notes**: Additional insights for exam preparation
 
-Organize the content in a student-friendly format with clear headings and bullet points. Emphasize concepts that seem particularly important or were repeated during the lecture.
-$outputFormatInstructions''',
+Organize the content in a student-friendly format with clear headings and bullet points. Emphasize concepts that seem particularly important or were repeated during the lecture. Format the response in a clear, professional manner suitable for sharing with classmates.''',
   ),
   
   cookingInstructions(
@@ -58,8 +52,7 @@ $outputFormatInstructions''',
 7. **Serving Suggestions**: Presentation and serving recommendations
 8. **Tips and Variations**: Additional advice or recipe modifications
 
-Format the recipe professionally with numbered steps and clear measurements. Focus on accuracy and clarity to ensure the recipe can be easily replicated.
-$outputFormatInstructions''',
+Format the recipe professionally with numbered steps and clear measurements. Focus on accuracy and clarity to ensure the recipe can be easily replicated.''',
   );
 
   const AudioSummarizationUseCase(this.prompt);

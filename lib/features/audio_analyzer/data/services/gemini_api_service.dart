@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:markdown/markdown.dart';
 import 'package:vocario/core/services/logger_service.dart';
 import 'package:vocario/core/services/storage_service.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
@@ -94,7 +95,7 @@ class GeminiApiService {
       LoggerService.info('Generating content for file: $fileUri');
       
       final response = await _dio.post(
-        '/v1beta/models/gemini-2.0-flash-exp:generateContent',
+        '/v1beta/models/gemini-2.5-flash:generateContent',
         options: Options(
           headers: {
             'Content-Type': 'application/json',
@@ -130,29 +131,8 @@ class GeminiApiService {
         throw Exception('No parts in content');
       }
 
-      final text = parts.first['text'] as String;
+      final text = (parts.first['text'] as String).trim();
       LoggerService.info('Generated content: $text');
-      
-      // Try to parse HTML <body> tag from the response
-      try {
-        String cleanedText = text.trim();
-        
-        final bodyRegExp = RegExp(
-          r'<body[^>]*>([\s\S]*?)<\/body>',
-          caseSensitive: false,
-        );
-        cleanedText = bodyRegExp.firstMatch(cleanedText)?.group(1) ?? "None";
-        cleanedText = cleanedText.trim();
-        
-        try {
-          return cleanedText;
-        } catch (_) {
-          return text;
-        }
-      } catch (e) {
-        LoggerService.warning('Failed to parse JSON from response, using fallback parsing');
-      }
-      
       return text;
     } catch (e) {
       LoggerService.error('Failed to generate content', e);

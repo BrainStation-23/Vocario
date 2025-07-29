@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:markdown_widget/widget/all.dart';
+import 'package:markdown_widget/widget/markdown.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vocario/presentation/screens/summaries/providers/summaries_provider.dart';
 import 'package:vocario/presentation/screens/summaries/widgets/audio_player_widget.dart';
@@ -653,20 +654,10 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
 
   Future<void> _shareAnalysisText(analysisAsync) async {
     try {
-      final analysis = await analysisAsync.value;
-      if (analysis != null && analysis.content.isNotEmpty) {
-        // Convert HTML to plain text for sharing
-        String textContent = analysis.content
-            .replaceAll(RegExp(r'<[^>]*>'), '') // Remove HTML tags
-            .replaceAll('&nbsp;', ' ')
-            .replaceAll('&amp;', '&')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&quot;', '"')
-            .trim();
-        
+      final markdownText = await analysisAsync.value;
+      if (markdownText != null && markdownText.content.isNotEmpty) {
         await Share.share(
-          textContent,
+          markdownText,
           subject: 'Audio Analysis Results',
         );
       } else {
@@ -703,39 +694,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
-      child: Html(
-        data: content,
-        style: {
-          "body": Style(
-            margin: Margins.zero,
-            padding: HtmlPaddings.zero,
-            fontSize: FontSize(14),
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          "h1": Style(
-            fontSize: FontSize(20),
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
-            margin: Margins.only(bottom: 12),
-          ),
-          "h2": Style(
-            fontSize: FontSize(18),
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.primary,
-            margin: Margins.only(top: 16, bottom: 8),
-          ),
-          "p": Style(
-            margin: Margins.only(bottom: 8),
-            lineHeight: LineHeight(1.5),
-          ),
-          "ul": Style(
-            margin: Margins.only(left: 16, bottom: 8),
-          ),
-          "li": Style(
-            margin: Margins.only(bottom: 4),
-          ),
-        },
-      ),
+      child: MarkdownBlock(data: content),
     );
   }
 }

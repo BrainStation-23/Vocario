@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:vocario/core/routing/app_router.dart';
 import 'package:vocario/core/services/logger_service.dart';
-import 'package:vocario/core/services/network_service.dart';
 import 'package:vocario/core/theme/app_theme.dart';
 import 'package:vocario/core/providers/app_providers.dart';
 import 'package:vocario/core/providers/language_provider.dart';
@@ -11,9 +10,6 @@ import 'package:vocario/core/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize services
-  NetworkService().initialize();
   
   LoggerService.info('App starting...');
   

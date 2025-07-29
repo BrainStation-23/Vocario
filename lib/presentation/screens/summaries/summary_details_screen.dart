@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:vocario/presentation/screens/summaries/providers/summaries_provider.dart';
 import 'package:vocario/presentation/screens/summaries/widgets/audio_player_widget.dart';
 import 'package:vocario/core/utils/format_utils.dart';
@@ -11,6 +12,7 @@ import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.d
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'dart:io';
 
 class SummaryDetailsScreen extends ConsumerStatefulWidget {
   final String recordingId;
@@ -338,9 +340,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
         ),
         const SizedBox(height: 16),
         ElevatedButton.icon(
-          onPressed: () {
-            ref.read(audioAnalyzerNotifierProvider.notifier).analyzeAudio(recording);
-          },
+          onPressed: () => _reanalyzeRecording(recording),
           icon: const Icon(Icons.refresh),
           label: const Text('Retry Analysis'),
         ),
@@ -378,23 +378,29 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
       children: [
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: () {
-              ref.read(audioAnalyzerNotifierProvider.notifier).analyzeAudio(recording);
-            },
+            onPressed: () => _reanalyzeRecording(recording),
             icon: const Icon(Icons.refresh),
             label: const Text('Reanalyze'),
           ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () => _showDeleteConfirmation(context, recording, analysisAsync),
-            icon: const Icon(Icons.delete),
-            label: const Text('Delete'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
-            ),
+        const SizedBox(width: 12),
+        IconButton(
+          onPressed: () => _showShareOptions(context, recording, analysisAsync),
+          icon: const Icon(Icons.share),
+          tooltip: 'Share',
+          style: IconButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(width: 12),
+        IconButton(
+          onPressed: () => _showDeleteConfirmation(context, recording, analysisAsync),
+          icon: const Icon(Icons.delete),
+          tooltip: 'Delete',
+          style: IconButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.error,
+            foregroundColor: Theme.of(context).colorScheme.onError,
           ),
         ),
       ],
@@ -529,6 +535,18 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
+  Future<void> _reanalyzeRecording(AudioRecording recording) async {
+    try {
+      await ref.read(audioAnalyzerNotifierProvider.notifier).analyzeAudio(recording);
+      
+      // Invalidate providers to refresh the UI after analysis completes
+      ref.invalidate(audioAnalysisByRecordingIdProvider(widget.recordingId));
+      ref.invalidate(audioAnalysesListProvider);
+    } catch (e) {
+      LoggerService.error('Failed to reanalyze recording', e);
+    }
+  }
+
   Future<void> _deleteRecordingAndAnalysis(recording, analysisAsync) async {
     try {
       // Delete analysis if it exists
@@ -560,6 +578,113 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to delete: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showShareOptions(BuildContext context, recording, analysisAsync) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Share Options'),
+          content: const Text('What would you like to share?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _shareAudioFile(recording);
+              },
+              icon: const Icon(Icons.audiotrack),
+              label: const Text('Share Audio File'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _shareAnalysisText(analysisAsync);
+              },
+              icon: const Icon(Icons.text_snippet),
+              label: const Text('Share Analysis Text'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _shareAudioFile(recording) async {
+    try {
+      final file = File(recording.filePath);
+      if (await file.exists()) {
+        final xFile = XFile(recording.filePath);
+        await Share.shareXFiles(
+          [xFile],
+          text: 'Audio recording from ${FormatUtils.formatDate(recording.createdAt)}',
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Audio file not found'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      LoggerService.error('Failed to share audio file', e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to share audio file: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareAnalysisText(analysisAsync) async {
+    try {
+      final analysis = await analysisAsync.value;
+      if (analysis != null && analysis.content.isNotEmpty) {
+        // Convert HTML to plain text for sharing
+        String textContent = analysis.content
+            .replaceAll(RegExp(r'<[^>]*>'), '') // Remove HTML tags
+            .replaceAll('&nbsp;', ' ')
+            .replaceAll('&amp;', '&')
+            .replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&quot;', '"')
+            .trim();
+        
+        await Share.share(
+          textContent,
+          subject: 'Audio Analysis Results',
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('No analysis content available to share'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      LoggerService.error('Failed to share analysis text', e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to share analysis text: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

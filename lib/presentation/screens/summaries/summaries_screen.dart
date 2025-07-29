@@ -98,6 +98,6 @@ class SummariesScreen extends ConsumerWidget {
   }
 
   void _navigateToDetails(BuildContext context, String recordingId) {
-    context.push('/home/summaries/$recordingId');
+    context.push('/summaries/$recordingId');
   }
 }

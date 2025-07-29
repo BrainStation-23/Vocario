@@ -1,14 +1,16 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:vocario/features/audio_recorder/data/repositories/audio_recorder_repository_impl.dart';
+import 'package:flutter/material.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
-import 'package:vocario/features/audio_recorder/domain/repositories/audio_recorder_repository.dart';
 import 'package:vocario/features/audio_recorder/domain/usecases/start_recording.dart';
 import 'package:vocario/features/audio_recorder/domain/usecases/stop_recording.dart';
 import 'package:vocario/features/audio_recorder/domain/usecases/toggle_recording.dart';
+import 'package:vocario/features/audio_recorder/data/repositories/audio_recorder_repository_impl.dart';
+import 'package:vocario/features/audio_recorder/domain/repositories/audio_recorder_repository.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/audio_analyzer_provider.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/core/routing/app_router.dart';
 
 part 'audio_recorder_provider.g.dart';
 
@@ -152,6 +154,7 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
       if (analysis.status == AnalysisStatus.completed) {
         LoggerService.info('Analysis successful, updating state to completed');
         state = state.copyWith(state: RecorderState.completed);
+        _navigateToSummaryDetails(recording.id);
       } else {
         LoggerService.error('Analysis failed with status: ${analysis.status}');
         state = state.copyWith(
@@ -166,6 +169,18 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
         errorMessage: 'Analysis failed: $e',
       );
     }
+  }
+  
+  void _navigateToSummaryDetails(String recordingId) {
+    // Schedule navigation for the next frame to ensure UI is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        AppRouter.router.push('/summaries/$recordingId');
+        LoggerService.info('Navigated to summary details for recording: $recordingId');
+      } catch (e) {
+        LoggerService.error('Could not navigate to summary details: $e');
+      }
+    });
   }
 
   Future<void> stopRecording() async {

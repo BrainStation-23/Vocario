@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:vocario/core/services/logger_service.dart';
 import 'package:vocario/core/services/storage_service.dart';
-import 'package:vocario/core/constants/app_constants.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
 
 class GeminiApiService {
   static const String _baseUrl = 'https://generativelanguage.googleapis.com';
@@ -88,7 +87,7 @@ class GeminiApiService {
     }
   }
 
-  Future<Map<String, dynamic>> generateContent(String fileUri, String mimeType) async {
+  Future<String> generateContent(String fileUri, String mimeType, {AudioSummarizationUseCase? usageContext}) async {
     try {
       await _ensureApiKeySet();
       
@@ -106,19 +105,7 @@ class GeminiApiService {
             {
               'parts': [
                 {
-                  'text': '''Please analyze this audio recording and provide:
-1. A complete transcript of the audio
-2. A concise summary (2-3 sentences)
-3. Key points (3-5 bullet points)
-4. Sentiment analysis (positive/negative/neutral with brief explanation)
-
-Format your response as JSON with the following structure:
-{
-  "transcript": "full transcript here",
-  "summary": "summary here",
-  "keyPoints": ["point 1", "point 2", "point 3"],
-  "sentiment": "sentiment analysis here"
-}'''
+                  'text': await _getPromptText(usageContext)
                 },
                 {
                   'file_data': {
@@ -146,23 +133,61 @@ Format your response as JSON with the following structure:
       final text = parts.first['text'] as String;
       LoggerService.info('Generated content: $text');
       
-      // Try to parse JSON from the response
+      // Try to parse HTML <body> tag from the response
       try {
-        // Extract JSON from the response text
-        final jsonMatch = RegExp(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}').firstMatch(text);
-        if (jsonMatch != null) {
-          final jsonStr = jsonMatch.group(0)!;
-          return json.decode(jsonStr) as Map<String, dynamic>;
+        String cleanedText = text.trim();
+        
+        final bodyRegExp = RegExp(
+          r'<body[^>]*>([\s\S]*?)<\/body>',
+          caseSensitive: false,
+        );
+        cleanedText = bodyRegExp.firstMatch(cleanedText)?.group(1) ?? "None";
+        cleanedText = cleanedText.trim();
+        
+        try {
+          return cleanedText;
+        } catch (_) {
+          return text;
         }
       } catch (e) {
         LoggerService.warning('Failed to parse JSON from response, using fallback parsing');
       }
       
-      // Fallback: parse manually if JSON parsing fails
-      return _parseResponseManually(text);
+      return text;
     } catch (e) {
       LoggerService.error('Failed to generate content', e);
       rethrow;
+    }
+  }
+
+  Future<String> _getPromptText(AudioSummarizationUseCase? usageContext) async {
+    // If no usage context provided, try to get it from storage
+    if (usageContext == null) {
+      final savedUsageContext = await StorageService.getUsageContext();
+      if (savedUsageContext != null) {
+        try {
+          usageContext = AudioSummarizationUseCase.values.firstWhere(
+            (context) => context.name == savedUsageContext,
+          );
+        } catch (e) {
+          LoggerService.warning('Invalid saved usage context: $savedUsageContext');
+        }
+      }
+    }
+    
+    // Return the appropriate prompt or fallback to default
+    if (usageContext != null) {
+      LoggerService.info('Using prompt for usage context: ${usageContext.displayName}');
+      return usageContext.prompt;
+    } else {
+      LoggerService.info('Using default prompt');
+      return '''Please analyze this audio recording and provide:
+1. A complete transcript of the audio
+2. A concise summary (2-3 sentences)
+3. Key points (3-5 bullet points)
+4. Sentiment analysis (positive/negative/neutral with brief explanation)
+
+IMPORTANT: Return ONLY valid HTML formatted text with proper HTML tags. Use basic HTML tags like <h1>, <h2>, <p>, <ul>, <li>, <strong>, <em> for formatting. Do NOT use markdown - only HTML tags.Do not include any prefixes like "html" or "markdown" in your response. Start your response directly with the relevant HTML tags.''';
     }
   }
 
@@ -184,40 +209,5 @@ Format your response as JSON with the following structure:
       default:
         return 'audio/mpeg'; // Default fallback
     }
-  }
-
-  Map<String, dynamic> _parseResponseManually(String text) {
-    // Fallback parsing if JSON parsing fails
-    final result = <String, dynamic>{
-      'transcript': '',
-      'summary': '',
-      'keyPoints': <String>[],
-      'sentiment': '',
-    };
-
-    // Simple regex-based parsing as fallback
-    final transcriptMatch = RegExp(r'transcript["\s]*:["\s]*([^"\n]+)', caseSensitive: false).firstMatch(text);
-    if (transcriptMatch != null) {
-      result['transcript'] = transcriptMatch.group(1)?.trim() ?? '';
-    }
-
-    final summaryMatch = RegExp(r'summary["\s]*:["\s]*([^"\n]+)', caseSensitive: false).firstMatch(text);
-    if (summaryMatch != null) {
-      result['summary'] = summaryMatch.group(1)?.trim() ?? '';
-    }
-
-    final sentimentMatch = RegExp(r'sentiment["\s]*:["\s]*([^"\n]+)', caseSensitive: false).firstMatch(text);
-    if (sentimentMatch != null) {
-      result['sentiment'] = sentimentMatch.group(1)?.trim() ?? '';
-    }
-
-    // If parsing fails, use the entire text as transcript
-    if (result['transcript'].toString().isEmpty) {
-      result['transcript'] = text;
-      result['summary'] = 'Analysis completed';
-      result['sentiment'] = 'neutral';
-    }
-
-    return result;
   }
 }

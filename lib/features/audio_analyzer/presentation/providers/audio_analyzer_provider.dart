@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vocario/features/audio_analyzer/data/repositories/audio_analyzer_repository_impl.dart';
 import 'package:vocario/features/audio_analyzer/data/services/gemini_api_service.dart';
@@ -10,26 +11,26 @@ import 'package:vocario/core/services/logger_service.dart';
 part 'audio_analyzer_provider.g.dart';
 
 @riverpod
-AudioAnalyzerRepository audioAnalyzerRepository(AudioAnalyzerRepositoryRef ref) {
+AudioAnalyzerRepository audioAnalyzerRepository(Ref ref) {
   final geminiApiService = GeminiApiService();
   return AudioAnalyzerRepositoryImpl(geminiApiService);
 }
 
 @riverpod
-AnalyzeAudio analyzeAudioUseCase(AnalyzeAudioUseCaseRef ref) {
+AnalyzeAudio analyzeAudioUseCase(Ref ref) {
   final repository = ref.watch(audioAnalyzerRepositoryProvider);
   return AnalyzeAudio(repository);
 }
 
 @riverpod
-Future<List<AudioAnalysis>> audioAnalysesList(AudioAnalysesListRef ref) async {
+Future<List<AudioAnalysis>> audioAnalysesList(Ref ref) async {
   final repository = ref.watch(audioAnalyzerRepositoryProvider);
   return await repository.getAllAnalyses();
 }
 
 @riverpod
 Future<AudioAnalysis?> audioAnalysisById(
-  AudioAnalysisByIdRef ref,
+  Ref ref,
   String analysisId,
 ) async {
   final repository = ref.watch(audioAnalyzerRepositoryProvider);
@@ -38,7 +39,7 @@ Future<AudioAnalysis?> audioAnalysisById(
 
 @riverpod
 Future<AudioAnalysis?> audioAnalysisByRecordingId(
-  AudioAnalysisByRecordingIdRef ref,
+  Ref ref,
   String recordingId,
 ) async {
   final repository = ref.watch(audioAnalyzerRepositoryProvider);

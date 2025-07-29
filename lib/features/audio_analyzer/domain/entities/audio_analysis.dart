@@ -10,10 +10,7 @@ enum AnalysisStatus {
 class AudioAnalysis extends Equatable {
   final String id;
   final String recordingId;
-  final String? transcript;
-  final String? summary;
-  final List<String> keyPoints;
-  final String? sentiment;
+  final String content;
   final AnalysisStatus status;
   final String? errorMessage;
   final DateTime createdAt;
@@ -22,10 +19,7 @@ class AudioAnalysis extends Equatable {
   const AudioAnalysis({
     required this.id,
     required this.recordingId,
-    this.transcript,
-    this.summary,
-    this.keyPoints = const [],
-    this.sentiment,
+    this.content = '',
     required this.status,
     this.errorMessage,
     required this.createdAt,
@@ -35,10 +29,7 @@ class AudioAnalysis extends Equatable {
   AudioAnalysis copyWith({
     String? id,
     String? recordingId,
-    String? transcript,
-    String? summary,
-    List<String>? keyPoints,
-    String? sentiment,
+    String? content,
     AnalysisStatus? status,
     String? errorMessage,
     DateTime? createdAt,
@@ -47,10 +38,7 @@ class AudioAnalysis extends Equatable {
     return AudioAnalysis(
       id: id ?? this.id,
       recordingId: recordingId ?? this.recordingId,
-      transcript: transcript ?? this.transcript,
-      summary: summary ?? this.summary,
-      keyPoints: keyPoints ?? this.keyPoints,
-      sentiment: sentiment ?? this.sentiment,
+      content: content ?? this.content,
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       createdAt: createdAt ?? this.createdAt,
@@ -62,10 +50,7 @@ class AudioAnalysis extends Equatable {
   List<Object?> get props => [
         id,
         recordingId,
-        transcript,
-        summary,
-        keyPoints,
-        sentiment,
+        content,
         status,
         errorMessage,
         createdAt,

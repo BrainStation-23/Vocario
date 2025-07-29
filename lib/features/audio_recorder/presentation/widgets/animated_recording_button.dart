@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
+import 'package:vocario/features/audio_recorder/presentation/providers/recording_flow_provider.dart';
+import 'package:vocario/features/audio_recorder/presentation/widgets/usage_context_selection_dialog.dart';
+import 'package:vocario/features/audio_recorder/presentation/widgets/api_key_dialog.dart';
 
 class AnimatedRecordingButton extends ConsumerStatefulWidget {
   const AnimatedRecordingButton({super.key});
@@ -67,6 +69,52 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
     _waveController.reset();
   }
 
+  Future<void> _handleRecordingButtonPress(BuildContext context, WidgetRef ref) async {
+    final recorderState = ref.read(audioRecorderNotifierProvider);
+    
+    // If already recording, stop recording
+    if (recorderState.state == RecorderState.recording) {
+      ref.read(audioRecorderNotifierProvider.notifier).toggleRecording();
+      return;
+    }
+    
+    // Check prerequisites before starting recording
+    final flowNotifier = ref.read(recordingFlowNotifierProvider.notifier);
+    final canRecord = await flowNotifier.checkPrerequisites();
+    
+    if (canRecord) {
+      // All prerequisites met, start recording
+      ref.read(audioRecorderNotifierProvider.notifier).toggleRecording();
+    } else {
+      // Handle missing prerequisites
+      final flowState = ref.read(recordingFlowNotifierProvider);
+      
+      if (flowState.state == RecordingFlowState.needsUsageContext) {
+        _showUsageContextDialog(context, ref);
+      } else if (flowState.state == RecordingFlowState.needsApiKey) {
+        _showApiKeyDialog(context, ref);
+      }
+    }
+  }
+
+  void _showUsageContextDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => UsageContextSelectionDialog(
+        onUsageSelected: (usageContext) {
+          ref.read(recordingFlowNotifierProvider.notifier).selectUsageContext(usageContext);
+        },
+      ),
+    );
+  }
+
+  void _showApiKeyDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => const ApiKeyDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).extension<AppColors>()!;
@@ -75,15 +123,7 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
     final isAnalyzing = recorderState.state == RecorderState.analyzing;
     final recordingDuration = recorderState.recording?.duration ?? Duration.zero;
 
-    // Handle navigation when analysis is completed and show error snackbar on failure
     ref.listen(audioRecorderNotifierProvider, (previous, next) {
-      if (previous?.state != RecorderState.completed && 
-          next.state == RecorderState.completed &&
-          next.recording != null) {
-        context.go('/home/summaries/${next.recording!.id}');
-      }
-      
-      // Show error snackbar when analysis fails
       if (previous?.state != RecorderState.error && 
           next.state == RecorderState.error &&
           next.errorMessage != null) {
@@ -150,7 +190,7 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
                         ],
                       ),
                       child: IconButton(
-                        onPressed: isAnalyzing ? null : () => ref.read(audioRecorderNotifierProvider.notifier).toggleRecording(),
+                        onPressed: isAnalyzing ? null : () => _handleRecordingButtonPress(context, ref),
                         icon: isAnalyzing 
                             ? const SizedBox(
                                 width: 70,

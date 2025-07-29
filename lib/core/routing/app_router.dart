@@ -1,52 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vocario/presentation/screens/home/home_screen.dart';
-import 'package:vocario/presentation/screens/splash/splash_screen.dart';
 import 'package:vocario/presentation/screens/settings/settings_screen.dart';
 import 'package:vocario/presentation/screens/about/about_screen.dart';
 import 'package:vocario/presentation/screens/licensing/licensing_screen.dart';
 import 'package:vocario/presentation/screens/summaries/summaries_screen.dart';
 import 'package:vocario/presentation/screens/summaries/summary_details_screen.dart';
-import 'package:vocario/presentation/screens/summaries/providers/summaries_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppRouter {
-  static const String splash = '/';
-  static const String home = '/home';
+  static const String home = '/';
   static const String audioSummarizer = '/audio-summarizer';
   static const String settings = '/settings';
   static const String about = '/about';
   static const String licensing = '/licensing';
-  static const String summaries = '/home/summaries';
-  static const String summaryDetails = '/home/summaries/:id';
+  static const String summaries = '/summaries';
+  static const String summaryDetails = '/summaries/:id';
 
   static final GoRouter router = GoRouter(
-    initialLocation: splash,
+    initialLocation: home,
     routes: [
-      GoRoute(
-        path: splash,
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
       GoRoute(
         path: home,
         name: 'home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: summaries,
+        name: 'summaries',
+        builder: (context, state) => const SummariesScreen(),
         routes: [
           GoRoute(
-            path: 'summaries',
-            name: 'summaries',
-            builder: (context, state) => const SummariesScreen(),
-            routes: [
-              GoRoute(
-                path: ':id',
-                name: 'summaryDetails',
-                builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return SummaryDetailsScreen(recordingId: id);
-                },
-              ),
-            ],
+            path: ':id',
+            name: 'summaryDetails',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return SummaryDetailsScreen(recordingId: id);
+            },
           ),
         ],
       ),

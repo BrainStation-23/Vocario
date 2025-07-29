@@ -15,6 +15,7 @@ class AppConstants {
   static const String themeKey = 'theme_mode';
   static const String languageKey = 'language';
   static const String apiKeyKey = 'gemini_api_key';
+  static const String usageContextKey = 'usage_context';
 
   // Audio Configuration
   static const int maxAudioDurationMinutes = 60;

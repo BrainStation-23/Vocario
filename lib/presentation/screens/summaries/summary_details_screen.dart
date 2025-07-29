@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:vocario/presentation/screens/summaries/providers/summaries_provider.dart';
 import 'package:vocario/presentation/screens/summaries/widgets/audio_player_widget.dart';
 import 'package:vocario/core/utils/format_utils.dart';
@@ -257,62 +258,8 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        if (analysis.transcript != null) ...[
-           _buildSectionHeader(context, 'Transcript', Icons.transcribe),
-           const SizedBox(height: 8),
-           _buildCopyableText(context, analysis.transcript!),
-           const SizedBox(height: 16),
-         ],
-         if (analysis.summary != null) ...[
-           _buildSectionHeader(context, 'Summary', Icons.summarize),
-           const SizedBox(height: 8),
-           _buildCopyableText(context, analysis.summary!),
-           const SizedBox(height: 16),
-         ],
-         if (analysis.keyPoints.isNotEmpty) ...[
-           _buildSectionHeader(context, 'Key Points', Icons.list_alt),
-           const SizedBox(height: 8),
-          ...analysis.keyPoints.map((point) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 6),
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    point,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-              ],
-            ),
-          )),
-          const SizedBox(height: 16),
-        ],
-        if (analysis.sentiment != null) ...[
-          _buildSectionHeader(context, 'Sentiment Analysis', Icons.sentiment_satisfied),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              analysis.sentiment!,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
+        if (analysis.content.isNotEmpty)
+          _buildMarkdownContent(context, analysis.content),
       ],
     );
   }
@@ -618,5 +565,52 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
         );
       }
     }
+  }
+
+  Widget _buildMarkdownContent(BuildContext context, String content) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Html(
+        data: content,
+        style: {
+          "body": Style(
+            margin: Margins.zero,
+            padding: HtmlPaddings.zero,
+            fontSize: FontSize(14),
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          "h1": Style(
+            fontSize: FontSize(20),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+            margin: Margins.only(bottom: 12),
+          ),
+          "h2": Style(
+            fontSize: FontSize(18),
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.primary,
+            margin: Margins.only(top: 16, bottom: 8),
+          ),
+          "p": Style(
+            margin: Margins.only(bottom: 8),
+            lineHeight: LineHeight(1.5),
+          ),
+          "ul": Style(
+            margin: Margins.only(left: 16, bottom: 8),
+          ),
+          "li": Style(
+            margin: Margins.only(bottom: 4),
+          ),
+        },
+      ),
+    );
   }
 }

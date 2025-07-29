@@ -4,9 +4,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:vocario/features/audio_analyzer/data/models/audio_analysis_model.dart';
 import 'package:vocario/features/audio_analyzer/data/services/gemini_api_service.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
+
 import 'package:vocario/features/audio_analyzer/domain/repositories/audio_analyzer_repository.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/core/services/storage_service.dart';
 
 class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
   final GeminiApiService _geminiApiService;
@@ -19,9 +22,9 @@ class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
     try {
       LoggerService.info('Starting audio analysis for recording: ${recording.id}');
       
-      // Create initial analysis record
+      // Create initial analysis record using recording ID as analysis ID
       final analysis = AudioAnalysisModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: recording.id,
         recordingId: recording.id,
         status: AnalysisStatus.analyzing,
         createdAt: DateTime.now(),
@@ -35,31 +38,26 @@ class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
         final fileUri = await _geminiApiService.uploadAudioFile(recording.filePath);
         final mimeType = _getMimeType(recording.filePath);
         
-        // Generate content analysis
-        final analysisResult = await _geminiApiService.generateContent(fileUri, mimeType);
-        
-        // Parse key points
-        final keyPoints = <String>[];
-        if (analysisResult['keyPoints'] is List) {
-          keyPoints.addAll((analysisResult['keyPoints'] as List).cast<String>());
-        } else if (analysisResult['keyPoints'] is String) {
-          // If it's a string, try to split by common delimiters
-          final keyPointsStr = analysisResult['keyPoints'] as String;
-          keyPoints.addAll(
-            keyPointsStr
-                .split(RegExp(r'[\n•\-\*]'))
-                .map((e) => e.trim())
-                .where((e) => e.isNotEmpty)
-                .toList(),
-          );
+        // Get usage context from storage
+        AudioSummarizationUseCase? usageContext;
+        final savedUsageContext = await StorageService.getUsageContext();
+        if (savedUsageContext != null) {
+          try {
+            usageContext = AudioSummarizationUseCase.values.firstWhere(
+              (context) => context.name == savedUsageContext,
+            );
+            LoggerService.info('Using saved usage context for analysis: ${usageContext.displayName}');
+          } catch (e) {
+            LoggerService.warning('Invalid saved usage context: $savedUsageContext');
+          }
         }
-
+        
+        // Generate content analysis with usage context
+        final analysisResult = await _geminiApiService.generateContent(fileUri, mimeType, usageContext: usageContext);
+        
         // Create completed analysis
         final completedAnalysis = analysis.copyWith(
-          transcript: analysisResult['transcript']?.toString(),
-          summary: analysisResult['summary']?.toString(),
-          keyPoints: keyPoints,
-          sentiment: analysisResult['sentiment']?.toString(),
+          content: analysisResult,
           status: AnalysisStatus.completed,
           completedAt: DateTime.now(),
         );

@@ -176,4 +176,21 @@ class StorageService {
   static Future<bool> hasApiKey() async {
     return await containsKey(AppConstants.apiKeyKey);
   }
+
+  // Usage context storage methods
+  static Future<void> saveUsageContext(String usageContext) async {
+    await saveString(AppConstants.usageContextKey, usageContext);
+  }
+
+  static Future<String?> getUsageContext() async {
+    return await getString(AppConstants.usageContextKey);
+  }
+
+  static Future<void> removeUsageContext() async {
+    await remove(AppConstants.usageContextKey);
+  }
+
+  static Future<bool> hasUsageContext() async {
+    return await containsKey(AppConstants.usageContextKey);
+  }
 }

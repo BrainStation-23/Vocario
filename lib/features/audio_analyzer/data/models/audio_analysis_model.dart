@@ -4,10 +4,7 @@ class AudioAnalysisModel extends AudioAnalysis {
   const AudioAnalysisModel({
     required super.id,
     required super.recordingId,
-    super.transcript,
-    super.summary,
-    super.keyPoints = const [],
-    super.sentiment,
+    super.content = '',
     required super.status,
     super.errorMessage,
     required super.createdAt,
@@ -18,10 +15,7 @@ class AudioAnalysisModel extends AudioAnalysis {
     return AudioAnalysisModel(
       id: json['id'] as String,
       recordingId: json['recordingId'] as String,
-      transcript: json['transcript'] as String?,
-      summary: json['summary'] as String?,
-      keyPoints: (json['keyPoints'] as List<dynamic>?)?.cast<String>() ?? [],
-      sentiment: json['sentiment'] as String?,
+      content: json['content'] as String? ?? '',
       status: AnalysisStatus.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => AnalysisStatus.pending,
@@ -38,10 +32,7 @@ class AudioAnalysisModel extends AudioAnalysis {
     return {
       'id': id,
       'recordingId': recordingId,
-      'transcript': transcript,
-      'summary': summary,
-      'keyPoints': keyPoints,
-      'sentiment': sentiment,
+      'content': content,
       'status': status.name,
       'errorMessage': errorMessage,
       'createdAt': createdAt.toIso8601String(),
@@ -53,10 +44,7 @@ class AudioAnalysisModel extends AudioAnalysis {
     return AudioAnalysisModel(
       id: analysis.id,
       recordingId: analysis.recordingId,
-      transcript: analysis.transcript,
-      summary: analysis.summary,
-      keyPoints: analysis.keyPoints,
-      sentiment: analysis.sentiment,
+      content: analysis.content,
       status: analysis.status,
       errorMessage: analysis.errorMessage,
       createdAt: analysis.createdAt,

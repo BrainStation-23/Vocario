@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/services/storage_service.dart';
+import 'package:vocario/core/utils/context_extensions.dart';
 import 'settings_card.dart';
 import 'custom_text_field.dart';
 import 'info_box.dart';
@@ -21,11 +21,11 @@ class ApiKeySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final appColors = Theme.of(context).extension<AppColors>()!;
+    final primaryColor = Theme.of(context).colorScheme.primary;
     
     return SettingsCard(
       icon: Icons.key,
-      iconColor: appColors.gradientStart,
+      iconColor: primaryColor,
       title: localizations.geminiApiKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +44,7 @@ class ApiKeySection extends StatelessWidget {
                 onPressed: () => _saveApiKey(context),
                 icon: Icon(
                   Icons.save,
-                  color: appColors.gradientStart,
+                  color: primaryColor,
                 ),
                 tooltip: 'Save API Key',
               ),
@@ -55,12 +55,12 @@ class ApiKeySection extends StatelessWidget {
             onTap: () => onLaunchURL('https://aistudio.google.com/app/apikey'),
             child: Row(
               children: [
-                Icon(Icons.open_in_new, color: appColors.gradientStart, size: 16),
+                Icon(Icons.open_in_new, color: primaryColor, size: 16),
                 const SizedBox(width: 8),
                 Text(
                   localizations.getApiKey,
                   style: TextStyle(
-                    color: appColors.gradientStart,
+                    color: primaryColor,
                     fontSize: 14,
                     decoration: TextDecoration.underline,
                   ),
@@ -81,12 +81,7 @@ class ApiKeySection extends StatelessWidget {
     final apiKey = controller.text.trim();
     
     if (apiKey.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter an API key'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      context.showSnackBar('Please enter an API key', isError: true);
       return;
     }
 
@@ -94,22 +89,15 @@ class ApiKeySection extends StatelessWidget {
       await StorageService.saveApiKey(apiKey);
       
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('API key saved successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        context.showSnackBar('API key saved successfully');
       }
       
       onApiKeySaved?.call();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save API key: $e'),
-            backgroundColor: Colors.red,
-          ),
+        context.showSnackBar(
+          'Failed to save API key: $e',
+          isError: true,
         );
       }
     }

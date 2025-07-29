@@ -43,6 +43,7 @@ class AudioRecordingModel extends AudioRecording {
     };
   }
 
+  @override
   AudioRecordingModel copyWith({
     String? id,
     String? filePath,

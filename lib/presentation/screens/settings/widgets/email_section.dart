@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'settings_card.dart';
 import 'custom_text_field.dart';
@@ -12,7 +11,6 @@ class EmailSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final appColors = Theme.of(context).extension<AppColors>()!;
     
     return SettingsCard(
       icon: Icons.email_outlined,
@@ -30,7 +28,7 @@ class EmailSection extends StatelessWidget {
           Text(
             localizations.emailDescription,
             style: TextStyle(
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: .7),
               fontSize: 14,
             ),
           ),

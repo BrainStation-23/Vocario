@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:markdown/markdown.dart';
 import 'package:vocario/core/services/logger_service.dart';
 import 'package:vocario/core/services/storage_service.dart';
-import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
 
 class GeminiApiService {
   static const String _baseUrl = 'https://generativelanguage.googleapis.com';
@@ -88,7 +87,7 @@ class GeminiApiService {
     }
   }
 
-  Future<String> generateContent(String fileUri, String mimeType, {AudioSummarizationUseCase? usageContext}) async {
+  Future<String> generateContent(String fileUri, String mimeType, {AudioSummarizationContext? usageContext}) async {
     try {
       await _ensureApiKeySet();
       
@@ -140,13 +139,13 @@ class GeminiApiService {
     }
   }
 
-  Future<String> _getPromptText(AudioSummarizationUseCase? usageContext) async {
+  Future<String> _getPromptText(AudioSummarizationContext? usageContext) async {
     // If no usage context provided, try to get it from storage
     if (usageContext == null) {
       final savedUsageContext = await StorageService.getUsageContext();
       if (savedUsageContext != null) {
         try {
-          usageContext = AudioSummarizationUseCase.values.firstWhere(
+          usageContext = AudioSummarizationContext.values.firstWhere(
             (context) => context.name == savedUsageContext,
           );
         } catch (e) {

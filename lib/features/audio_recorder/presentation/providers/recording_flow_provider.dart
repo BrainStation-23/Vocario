@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vocario/core/services/storage_service.dart';
-import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
 import 'package:vocario/core/services/logger_service.dart';
 
 part 'recording_flow_provider.g.dart';
@@ -16,7 +16,7 @@ enum RecordingFlowState {
 
 class RecordingFlowData {
   final RecordingFlowState state;
-  final AudioSummarizationUseCase? selectedUsageContext;
+  final AudioSummarizationContext? selectedUsageContext;
   final bool hasApiKey;
   final String? errorMessage;
 
@@ -29,7 +29,7 @@ class RecordingFlowData {
 
   RecordingFlowData copyWith({
     RecordingFlowState? state,
-    AudioSummarizationUseCase? selectedUsageContext,
+    AudioSummarizationContext? selectedUsageContext,
     bool? hasApiKey,
     String? errorMessage,
   }) {
@@ -55,11 +55,11 @@ class RecordingFlowNotifier extends _$RecordingFlowNotifier {
     try {
       // Load saved usage context
       final savedUsageContext = await StorageService.getUsageContext();
-      AudioSummarizationUseCase? usageContext;
+      AudioSummarizationContext? usageContext;
       
       if (savedUsageContext != null) {
         try {
-          usageContext = AudioSummarizationUseCase.values.firstWhere(
+          usageContext = AudioSummarizationContext.values.firstWhere(
             (context) => context.name == savedUsageContext,
           );
           LoggerService.info('Loaded saved usage context: ${usageContext.displayName}');
@@ -93,11 +93,11 @@ class RecordingFlowNotifier extends _$RecordingFlowNotifier {
       
       // Check if usage context is saved
       final savedUsageContext = await StorageService.getUsageContext();
-      AudioSummarizationUseCase? usageContext;
+      AudioSummarizationContext? usageContext;
       
       if (savedUsageContext != null) {
         try {
-          usageContext = AudioSummarizationUseCase.values.firstWhere(
+          usageContext = AudioSummarizationContext.values.firstWhere(
             (context) => context.name == savedUsageContext,
           );
           LoggerService.info('Found saved usage context: ${usageContext.displayName}');
@@ -149,7 +149,7 @@ class RecordingFlowNotifier extends _$RecordingFlowNotifier {
     }
   }
 
-  Future<void> selectUsageContext(AudioSummarizationUseCase usageContext) async {
+  Future<void> selectUsageContext(AudioSummarizationContext usageContext) async {
     try {
       LoggerService.info('Saving selected usage context: ${usageContext.displayName}');
       await StorageService.saveUsageContext(usageContext.name);
@@ -169,7 +169,7 @@ class RecordingFlowNotifier extends _$RecordingFlowNotifier {
     }
   }
 
-  Future<void> changeUsageContext(AudioSummarizationUseCase usageContext) async {
+  Future<void> changeUsageContext(AudioSummarizationContext usageContext) async {
     await selectUsageContext(usageContext);
   }
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_widget/widget/all.dart';
-import 'package:markdown_widget/widget/markdown.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vocario/presentation/screens/summaries/providers/summaries_provider.dart';
 import 'package:vocario/presentation/screens/summaries/widgets/audio_player_widget.dart';
@@ -13,6 +11,7 @@ import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.d
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/core/utils/context_extensions.dart';
 import 'dart:io';
 
 class SummaryDetailsScreen extends ConsumerStatefulWidget {
@@ -56,16 +55,10 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     // Listen for analysis failures
     ref.listen<AudioAnalyzerState>(audioAnalyzerNotifierProvider, (previous, next) {
       if (next == AudioAnalyzerState.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Analysis failed. Please try again.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            action: SnackBarAction(
-              label: 'Dismiss',
-              textColor: Theme.of(context).colorScheme.onError,
-              onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-            ),
-          ),
+        context.showSnackBar(
+          'Analysis failed. Please try again.',
+          isError: true,
+          onClick: () => context.hideSnackBar(),
         );
       }
     });
@@ -127,7 +120,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
-  Widget _buildRecordingInfoCard(BuildContext context, recording) {
+  Widget _buildRecordingInfoCard(BuildContext context, AudioRecording recording) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -161,7 +154,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
-  Widget _buildAudioPlayerCard(BuildContext context, recording) {
+  Widget _buildAudioPlayerCard(BuildContext context, AudioRecording recording) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -316,7 +309,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
-  Widget _buildAnalysisError(BuildContext context, String? errorMessage, recording) {
+  Widget _buildAnalysisError(BuildContext context, String? errorMessage, AudioRecording recording) {
     return Column(
       children: [
         Icon(
@@ -374,7 +367,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, recording, analysisAsync) {
+  Widget _buildActionButtons(BuildContext context, AudioRecording recording, AsyncValue<AudioAnalysis?> analysisAsync) {
     return Row(
       children: [
         Expanded(
@@ -405,46 +398,6 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCopyableText(BuildContext context, String text) {
-    return GestureDetector(
-      onLongPress: () => _copyToClipboard(context, text),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-          ),
-        ),
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-      ),
     );
   }
 
@@ -494,18 +447,8 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
-  void _copyToClipboard(BuildContext context, String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Copied to clipboard'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 
-  void _showDeleteConfirmation(BuildContext context, recording, analysisAsync) {
+  void _showDeleteConfirmation(BuildContext context, AudioRecording recording, AsyncValue<AudioAnalysis?> analysisAsync) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -548,45 +491,32 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     }
   }
 
-  Future<void> _deleteRecordingAndAnalysis(recording, analysisAsync) async {
+  Future<void> _deleteRecordingAndAnalysis(AudioRecording recording, AsyncValue<AudioAnalysis?> analysisAsync) async {
     try {
-      // Delete analysis if it exists
-      final analysis = await analysisAsync.value;
+      final analysis = analysisAsync.value;
       if (analysis != null) {
         await ref.read(audioAnalyzerRepositoryProvider).deleteAnalysis(analysis.id);
       }
       
-      // Delete recording file
       await ref.read(audioRecorderRepositoryProvider).deleteRecording(recording.id);
       
-      // Invalidate providers to refresh data
       ref.invalidate(recordingByIdProvider(widget.recordingId));
       ref.invalidate(audioAnalysisByRecordingIdProvider(widget.recordingId));
       ref.invalidate(allRecordingsProvider);
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Recording and analysis deleted successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        context.showSnackBar('Recording and analysis deleted successfully');
         context.pop();
       }
     } catch (e) {
       LoggerService.error('Failed to delete recording and analysis', e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to delete: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        context.showSnackBar('Failed to delete: $e', isError: true);
       }
     }
   }
 
-  void _showShareOptions(BuildContext context, recording, analysisAsync) {
+  void _showShareOptions(BuildContext context, AudioRecording recording, AsyncValue<AudioAnalysis?> analysisAsync) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -620,7 +550,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
     );
   }
 
-  Future<void> _shareAudioFile(recording) async {
+  Future<void> _shareAudioFile(AudioRecording recording) async {
     try {
       final file = File(recording.filePath);
       if (await file.exists()) {
@@ -631,69 +561,58 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
         );
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Audio file not found'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          context.showSnackBar('Audio file not found', isError: true);
         }
       }
     } catch (e) {
       LoggerService.error('Failed to share audio file', e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to share audio file: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        context.showSnackBar('Failed to share audio file: $e', isError: true);
       }
     }
   }
 
-  Future<void> _shareAnalysisText(analysisAsync) async {
+  Future<void> _shareAnalysisText(AsyncValue<AudioAnalysis?> analysisAsync) async {
     try {
-      final markdownText = await analysisAsync.value;
-      if (markdownText != null && markdownText.content.isNotEmpty) {
+      final analysis = analysisAsync.value;
+      if (analysis != null && analysis.content.isNotEmpty) {
+        // Convert markdown to plain text for sharing
+        String textContent = analysis.content
+            .replaceAll(RegExp(r'^#{1,6}\s+'), '') // Remove headers
+            .replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1') // Remove bold
+            .replaceAll(RegExp(r'\*(.*?)\*'), r'$1') // Remove italic
+            .replaceAll(RegExp(r'_(.*?)_'), r'$1') // Remove italic underscore
+            .replaceAll(RegExp(r'`(.*?)`'), r'$1') // Remove inline code
+            .replaceAll(RegExp(r'\[(.*?)\]\(.*?\)'), r'$1') // Remove links, keep text
+            .replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '') // Remove bullet points
+            .replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '') // Remove numbered lists
+            .replaceAll(RegExp(r'^\s*>\s+', multiLine: true), '') // Remove blockquotes
+            .replaceAll(RegExp(r'\n\s*\n'), '\n') // Remove extra blank lines
+            .trim();
+        
         await Share.share(
-          markdownText,
+          textContent,
           subject: 'Audio Analysis Results',
         );
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('No analysis content available to share'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          context.showSnackBar('No analysis content available to share', isError: true);
         }
       }
     } catch (e) {
       LoggerService.error('Failed to share analysis text', e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to share analysis text: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        context.showSnackBar(
+          'Failed to share analysis text: $e',
+          isError: true,
         );
       }
     }
   }
 
   Widget _buildMarkdownContent(BuildContext context, String content) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-        ),
-      ),
       child: MarkdownBlock(data: content),
     );
   }

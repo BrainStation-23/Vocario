@@ -5,7 +5,6 @@ import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.
 import 'package:vocario/core/services/logger_service.dart';
 
 class ImportAudioUseCase {
-  static const int maxFileSizeBytes = 20 * 1024 * 1024; // 20MB
   static const List<String> allowedExtensions = ['mp3', 'wav', 'aac', 'm4a', 'ogg', 'flac'];
 
   Future<AudioRecording?> call() async {
@@ -25,11 +24,6 @@ class ImportAudioUseCase {
       }
 
       final pickedFile = result.files.first;
-      
-      // Validate file size
-      if (pickedFile.size > maxFileSizeBytes) {
-        throw Exception('File size exceeds 20MB limit. Selected file: ${(pickedFile.size / (1024 * 1024)).toStringAsFixed(1)}MB');
-      }
 
       // Validate file extension
       final extension = pickedFile.extension?.toLowerCase();
@@ -74,7 +68,7 @@ class ImportAudioUseCase {
       // Generate unique filename with timestamp
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final extension = pickedFile.extension;
-      final fileName = 'imported_${timestamp}.$extension';
+      final fileName = 'imported_$timestamp.$extension';
       final destinationPath = '${recordingsDir.path}/$fileName';
 
       // Copy file to internal storage

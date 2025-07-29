@@ -3,16 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:vocario/presentation/screens/home/home_screen.dart';
 import 'package:vocario/presentation/screens/settings/settings_screen.dart';
 import 'package:vocario/presentation/screens/about/about_screen.dart';
-import 'package:vocario/presentation/screens/licensing/licensing_screen.dart';
 import 'package:vocario/presentation/screens/summaries/summaries_screen.dart';
 import 'package:vocario/presentation/screens/summaries/summary_details_screen.dart';
 
 class AppRouter {
   static const String home = '/';
-  static const String audioSummarizer = '/audio-summarizer';
   static const String settings = '/settings';
   static const String about = '/about';
-  static const String licensing = '/licensing';
   static const String summaries = '/summaries';
   static const String summaryDetails = '/summaries/:id';
 
@@ -40,15 +37,6 @@ class AppRouter {
         ],
       ),
       GoRoute(
-        path: audioSummarizer,
-        name: 'audioSummarizer',
-        builder: (context, state) => const Placeholder(
-          child: Center(
-            child: Text('Audio Summarizer Screen'),
-          ),
-        ),
-      ),
-      GoRoute(
         path: settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
@@ -57,11 +45,6 @@ class AppRouter {
         path: about,
         name: 'about',
         builder: (context, state) => const AboutScreen(),
-      ),
-      GoRoute(
-        path: licensing,
-        name: 'licensing',
-        builder: (context, state) => const LicensingScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vocario/core/theme/app_colors.dart';
+import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
 import 'package:vocario/features/audio_recorder/presentation/providers/recording_flow_provider.dart';
@@ -127,23 +128,13 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
       if (previous?.state != RecorderState.error && 
           next.state == RecorderState.error &&
           next.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
+            context.showSnackBar(
               'Analysis failed: ${next.errorMessage}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.red.shade600,
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: 'Dismiss',
-              textColor: Colors.white,
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-          ),
-        );
+              isError: true,
+              onClick: () {
+                context.hideSnackBar();
+              }
+            );
       }
     });
 

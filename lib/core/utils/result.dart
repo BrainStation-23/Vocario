@@ -89,6 +89,7 @@ abstract class Result<T> extends Equatable {
 }
 
 class Success<T> extends Result<T> {
+  @override
   final T data;
 
   const Success(this.data);
@@ -98,6 +99,7 @@ class Success<T> extends Result<T> {
 }
 
 class Failure<T> extends Result<T> {
+  @override
   final AppError error;
 
   const Failure(this.error);
@@ -120,7 +122,7 @@ extension FutureResultExtension<T> on Future<Result<T>> {
   Future<Result<T>> onSuccessAsync(Future<void> Function(T data) action) async {
     final result = await this;
     if (result.isSuccess) {
-      await action(result.data!);
+      await action(result.data as T);
     }
     return result;
   }

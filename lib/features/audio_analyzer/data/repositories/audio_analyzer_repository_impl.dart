@@ -4,7 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:vocario/features/audio_analyzer/data/models/audio_analysis_model.dart';
 import 'package:vocario/features/audio_analyzer/data/services/gemini_api_service.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
-import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
 
 import 'package:vocario/features/audio_analyzer/domain/repositories/audio_analyzer_repository.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
@@ -39,11 +39,11 @@ class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
         final mimeType = _getMimeType(recording.filePath);
         
         // Get usage context from storage
-        AudioSummarizationUseCase? usageContext;
+        AudioSummarizationContext? usageContext;
         final savedUsageContext = await StorageService.getUsageContext();
         if (savedUsageContext != null) {
           try {
-            usageContext = AudioSummarizationUseCase.values.firstWhere(
+            usageContext = AudioSummarizationContext.values.firstWhere(
               (context) => context.name == savedUsageContext,
             );
             LoggerService.info('Using saved usage context for analysis: ${usageContext.displayName}');

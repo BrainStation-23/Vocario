@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/theme/app_text_styles.dart';
-import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_use_case.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
 import 'package:vocario/features/audio_recorder/presentation/widgets/usage_context_selection_dialog.dart';
 
 class UsageContextDisplay extends StatelessWidget {
-  final AudioSummarizationUseCase usageContext;
-  final Function(AudioSummarizationUseCase) onUsageChanged;
+  final AudioSummarizationContext usageContext;
+  final Function(AudioSummarizationContext) onUsageChanged;
 
   const UsageContextDisplay({
     super.key,
@@ -16,7 +15,6 @@ class UsageContextDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = Theme.of(context).extension<AppColors>()!;
     final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
 
     return Container(

@@ -43,9 +43,6 @@ class MenuButton extends StatelessWidget {
             case 'about':
               context.push(AppRouter.about);
               break;
-            case 'licensing':
-              context.push(AppRouter.licensing);
-              break;
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -70,14 +67,6 @@ class MenuButton extends StatelessWidget {
             child: ListTile(
               leading: Icon(Icons.info),
               title: Text('About Us'),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          const PopupMenuItem<String>(
-            value: 'licensing',
-            child: ListTile(
-              leading: Icon(Icons.description),
-              title: Text('Licensing'),
               contentPadding: EdgeInsets.zero,
             ),
           ),

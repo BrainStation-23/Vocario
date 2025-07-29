@@ -10,6 +10,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.micButtonGradientEnd,
     required this.menuButtonBackground,
     required this.menuButtonIcon,
+    required this.successColor,
+    required this.warningColor,
   });
 
   final Color gradientStart;
@@ -19,6 +21,8 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color micButtonGradientEnd;
   final Color menuButtonBackground;
   final Color menuButtonIcon;
+  final Color successColor;
+  final Color warningColor;
 
   @override
   AppColors copyWith({
@@ -29,6 +33,8 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? micButtonGradientEnd,
     Color? menuButtonBackground,
     Color? menuButtonIcon,
+    Color? successColor,
+    Color? warningColor,
   }) {
     return AppColors(
       gradientStart: gradientStart ?? this.gradientStart,
@@ -38,6 +44,8 @@ class AppColors extends ThemeExtension<AppColors> {
       micButtonGradientEnd: micButtonGradientEnd ?? this.micButtonGradientEnd,
       menuButtonBackground: menuButtonBackground ?? this.menuButtonBackground,
       menuButtonIcon: menuButtonIcon ?? this.menuButtonIcon,
+      successColor: successColor ?? this.successColor,
+      warningColor: warningColor ?? this.warningColor,
     );
   }
 
@@ -54,6 +62,8 @@ class AppColors extends ThemeExtension<AppColors> {
       micButtonGradientEnd: Color.lerp(micButtonGradientEnd, other.micButtonGradientEnd, t)!,
       menuButtonBackground: Color.lerp(menuButtonBackground, other.menuButtonBackground, t)!,
       menuButtonIcon: Color.lerp(menuButtonIcon, other.menuButtonIcon, t)!,
+      successColor: Color.lerp(successColor, other.successColor, t)!,
+      warningColor: Color.lerp(warningColor, other.warningColor, t)!,
     );
   }
 
@@ -66,6 +76,8 @@ class AppColors extends ThemeExtension<AppColors> {
     micButtonGradientEnd: Color(0xFF6A4C93),
     menuButtonBackground: Color(0xFFFFFFFF),
     menuButtonIcon: Color(0xFF000000),
+    successColor: Color(0xFF4EB87A),
+    warningColor: Color(0xFFF0AE42),
   );
 
   // Dark theme colors
@@ -77,5 +89,7 @@ class AppColors extends ThemeExtension<AppColors> {
     micButtonGradientEnd: Color(0xFF007FFF),
     menuButtonBackground: Color(0xFF2D2D2D),
     menuButtonIcon: Color(0xFFFFFFFF),
+    successColor: Color(0xFF4EB87A),
+    warningColor: Color(0xFFF0AE42),
   );
 }

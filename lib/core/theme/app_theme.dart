@@ -6,9 +6,9 @@ class AppTheme {
   static const Color primaryPurple = Color(0xFF6A4C93);
   static const Color secondaryAzureBlue = Color(0xFF007FFF);
   static const Color surfaceColor = Color(0xFFF8F9FA);
-  static const Color errorColor = Color(0xFFE74C3C);
-  static const Color successColor = Color(0xFF27AE60);
-  static const Color warningColor = Color(0xFFF39C12);
+  static const Color errorColor = Color(0xFFE46254);
+  static const Color primaryPurpleDark = Color(0xFF976FD0);
+
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -17,7 +17,7 @@ class AppTheme {
         seedColor: primaryPurple,
         primary: primaryPurple,
         secondary: secondaryAzureBlue,
-        surface: surfaceColor,
+        surface: Color(0xFFEFEFEF),
         error: errorColor,
         brightness: Brightness.light,
       ),
@@ -39,8 +39,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryPurple,
-          side: const BorderSide(color: primaryPurple),
+          foregroundColor: Color(0xFF2F2F52),
+          side: const BorderSide(color: Color(0xFF2F2F52), width: 2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -80,8 +80,8 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryPurple,
-        primary: primaryPurple,
+        seedColor: primaryPurpleDark,
+        primary: primaryPurpleDark,
         secondary: secondaryAzureBlue,
         surface: const Color(0xFF1E1E1E),
         error: errorColor,
@@ -106,7 +106,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryPurple,
-          side: const BorderSide(color: primaryPurple),
+          side: const BorderSide(color: primaryPurple, width: 2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

@@ -77,13 +77,9 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 32.0),
-                    child: BottomButtons(
-                      importAudioText: localizations.importAudio,
-                      importVideoText: localizations.importVideo,
-                      textStyle: appTextStyles.buttonText,
-                    ),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 32.0),
+                    child: BottomButtons(),
                   ),
                 ],
               ),

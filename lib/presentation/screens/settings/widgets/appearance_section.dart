@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vocario/core/providers/app_providers.dart';
-import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'settings_card.dart';
 
@@ -13,11 +12,12 @@ class AppearanceSection extends ConsumerWidget {
     final themeMode = ref.watch(themeModeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
     final localizations = AppLocalizations.of(context)!;
-    final appColors = Theme.of(context).extension<AppColors>()!;
-    
+
     return SettingsCard(
-      icon: Icons.wb_sunny,
-      iconColor: Colors.orange,
+      icon: isDarkMode ? Icons.nightlight_round : Icons.wb_sunny,
+      iconColor: isDarkMode
+          ? Theme.of(context).colorScheme.primary
+          : Colors.orange,
       title: localizations.appearance,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -32,14 +32,10 @@ class AppearanceSection extends ConsumerWidget {
           Switch(
             value: isDarkMode,
             onChanged: (value) {
-              ref.read(themeModeNotifierProvider.notifier).setThemeMode(
-                value ? ThemeMode.dark : ThemeMode.light,
-              );
+              ref
+                  .read(themeModeNotifierProvider.notifier)
+                  .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
             },
-            activeColor: appColors.gradientStart,
-            activeTrackColor: appColors.gradientStart.withValues(alpha: 0.3),
-            inactiveThumbColor: isDarkMode ? Colors.grey[300] : Colors.grey[600],
-            inactiveTrackColor: isDarkMode ? Colors.grey[700] : Colors.grey[300],
           ),
         ],
       ),

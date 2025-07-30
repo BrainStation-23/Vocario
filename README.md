@@ -57,7 +57,7 @@ Vocario is a powerful Flutter application that leverages AI to summarize audio c
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under a custom Polyform Personal Use License - see the [LICENSE](LICENSE.MD) file for details.
 
 ## 🤝 Contributing
 
@@ -69,8 +69,4 @@ Contributions are what make the open source community such an amazing place to l
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📞 Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_handle) - your.email@example.com
-
-Project Link: [https://github.com/your-username/vocario](https://github.com/your-username/vocario)

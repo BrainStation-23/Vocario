@@ -126,10 +126,9 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
 
     ref.listen(audioRecorderNotifierProvider, (previous, next) {
       if (previous?.state != RecorderState.error && 
-          next.state == RecorderState.error &&
-          next.errorMessage != null) {
+          next.state == RecorderState.error) {
             context.showSnackBar(
-              'Analysis failed: ${next.errorMessage}',
+              next.errorMessage ?? 'Analysis failed',
               isError: true,
               onClick: () {
                 context.hideSnackBar();

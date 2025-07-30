@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:vocario/presentation/screens/home/home_screen.dart';
-import 'package:vocario/presentation/screens/settings/settings_screen.dart';
-import 'package:vocario/presentation/screens/about/about_screen.dart';
-import 'package:vocario/presentation/screens/summaries/summaries_screen.dart';
-import 'package:vocario/presentation/screens/summaries/summary_details_screen.dart';
+import 'package:vocario/features/home/presentation/home_screen.dart';
+import 'package:vocario/features/settings/presentation/settings_screen.dart';
+import 'package:vocario/features/about/presentation/about_screen.dart';
+import 'package:vocario/features/audio_analyzer/presentation/screens/recording_list_screen.dart';
+import 'package:vocario/features/audio_analyzer/presentation/screens/analysis_result_screen.dart';
 
 class AppRouter {
   static const String home = '/';
@@ -24,14 +24,14 @@ class AppRouter {
       GoRoute(
         path: summaries,
         name: 'summaries',
-        builder: (context, state) => const SummariesScreen(),
+        builder: (context, state) => const RecordingListScreen(),
         routes: [
           GoRoute(
             path: ':id',
             name: 'summaryDetails',
             builder: (context, state) {
               final id = state.pathParameters['id']!;
-              return SummaryDetailsScreen(recordingId: id);
+              return AnalysisResultScreen(recordingId: id);
             },
           ),
         ],

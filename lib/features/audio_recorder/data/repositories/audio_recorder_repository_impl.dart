@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:vocario/core/utils/app_utils.dart';
 import 'package:vocario/features/audio_recorder/data/models/audio_recording_model.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/features/audio_recorder/domain/repositories/audio_recorder_repository.dart';
@@ -50,9 +50,10 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
         _isInitialized = true;
       }
       
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'recording_${DateTime.now().millisecondsSinceEpoch}.aac';
-      final filePath = '${directory.path}/$fileName';
+      final audioDir = await AppUtils.getAudioDirectory();
+      final timestamp = DateTime.now();
+      final fileName = 'recording_${timestamp.year}${timestamp.month.toString().padLeft(2, '0')}${timestamp.day.toString().padLeft(2, '0')}_${timestamp.hour.toString().padLeft(2, '0')}${timestamp.minute.toString().padLeft(2, '0')}${timestamp.second.toString().padLeft(2, '0')}.aac';
+      final filePath = '${audioDir.path}/$fileName';
       
       await _recorder.startRecorder(
         toFile: filePath,
@@ -84,13 +85,8 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
         final file = File(_currentFilePath!);
         final fileSize = await file.length();
         
-        // Extract timestamp from filename to maintain consistent ID
-        final fileName = _currentFilePath!.split('/').last;
-        final timestampMatch = RegExp(r'recording_(\d+)\.aac').firstMatch(fileName);
-        final recordingId = timestampMatch?.group(1) ?? DateTime.now().millisecondsSinceEpoch.toString();
-        final createdAt = timestampMatch != null 
-            ? DateTime.fromMillisecondsSinceEpoch(int.parse(timestampMatch.group(1)!))
-            : DateTime.now();
+        final recordingId = AppUtils.filePathToID(_currentFilePath ?? '');
+        final createdAt = DateTime.now();
         
         final recording = AudioRecordingModel(
           id: recordingId,
@@ -196,10 +192,12 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   @override
   Future<List<AudioRecording>> getAllRecordings() async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final recordingFiles = directory
+      final audioDir = await AppUtils.getAudioDirectory();
+
+      
+      final recordingFiles = audioDir
           .listSync()
-          .where((entity) => entity is File && entity.path.endsWith('.aac'))
+          .where((entity) => entity is File)
           .cast<File>()
           .toList();
       
@@ -207,26 +205,17 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
       
       for (final file in recordingFiles) {
         try {
-          final fileName = file.path.split('/').last;
-          
-          // Extract timestamp from filename (recording_{timestamp}.aac)
-          final timestampMatch = RegExp(r'recording_(\d+)\.aac').firstMatch(fileName);
-          if (timestampMatch == null) continue;
-          
-          final timestamp = int.parse(timestampMatch.group(1)!);
-          final createdAt = DateTime.fromMillisecondsSinceEpoch(timestamp);
-          
-          // Get file stats
+          final id = AppUtils.filePathToID(file.path);
           final fileStat = await file.stat();
           final fileSize = fileStat.size;
+          final createdAt = fileStat.modified;
           
-          // Try to get duration from metadata or estimate based on file size
           // For AAC files, rough estimation: ~128kbps = 16KB/s
           final estimatedDurationSeconds = (fileSize / 16000).round();
           final duration = Duration(seconds: estimatedDurationSeconds);
           
           final recording = AudioRecordingModel(
-            id: timestamp.toString(),
+            id: id,
             filePath: file.path,
             createdAt: createdAt,
             duration: duration,
@@ -253,36 +242,35 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   @override
   Future<AudioRecording?> getRecordingById(String id) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final expectedFileName = 'recording_$id.aac';
-      final filePath = '${directory.path}/$expectedFileName';
-      final file = File(filePath);
+      final audioDir = await AppUtils.getAudioDirectory();
+      final files = audioDir.listSync().where((entity) => entity is File).cast<File>();
       
-      if (!await file.exists()) {
-        LoggerService.info('Recording file not found: $filePath');
-        return null;
+      for (final file in files) {
+        final fileId = AppUtils.filePathToID(file.path);
+        
+        if (fileId == id) {
+          final fileStat = await file.stat();
+          final fileSize = fileStat.size;
+          final createdAt = fileStat.modified;
+          
+          // Estimate duration based on file size
+          // For AAC files, rough estimation: ~128kbps = 16KB/s
+          final estimatedDurationSeconds = (fileSize / 16000).round();
+          final duration = Duration(seconds: estimatedDurationSeconds);
+          
+          return AudioRecordingModel(
+            id: id,
+            filePath: file.path,
+            createdAt: createdAt,
+            duration: duration,
+            fileSizeBytes: fileSize,
+            isRecording: false,
+          );
+        }
       }
       
-      final timestamp = int.parse(id);
-      final createdAt = DateTime.fromMillisecondsSinceEpoch(timestamp);
-      
-      // Get file stats
-      final fileStat = await file.stat();
-      final fileSize = fileStat.size;
-      
-      // Estimate duration based on file size
-      // For AAC files, rough estimation: ~128kbps = 16KB/s
-      final estimatedDurationSeconds = (fileSize / 16000).round();
-      final duration = Duration(seconds: estimatedDurationSeconds);
-      
-      return AudioRecordingModel(
-        id: id,
-        filePath: filePath,
-        createdAt: createdAt,
-        duration: duration,
-        fileSizeBytes: fileSize,
-        isRecording: false,
-      );
+      LoggerService.info('Recording file not found for id: $id');
+      return null;
     } catch (e) {
       LoggerService.error('Failed to get recording by id: $id', e);
       return null;
@@ -294,17 +282,20 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   @override
   Future<void> deleteRecording(String id) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'recording_$id.aac';
-      final filePath = '${directory.path}/$fileName';
-      final file = File(filePath);
+      final audioDir = await AppUtils.getAudioDirectory();
+      final files = audioDir.listSync().where((entity) => entity is File).cast<File>();
       
-      if (await file.exists()) {
-        await file.delete();
-        LoggerService.info('Recording file deleted: $filePath');
-      } else {
-        LoggerService.warning('Recording file not found for deletion: $filePath');
+      for (final file in files) {
+        final fileId = AppUtils.filePathToID(file.path);
+        
+        if (fileId == id) {
+          await file.delete();
+          LoggerService.info('Recording file deleted: ${file.path}');
+          return;
+        }
       }
+      
+      LoggerService.warning('Recording file not found for deletion with id: $id');
     } catch (e) {
       LoggerService.error('Failed to delete recording: $id', e);
       rethrow;

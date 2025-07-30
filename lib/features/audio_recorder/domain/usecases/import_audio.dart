@@ -1,12 +1,20 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:vocario/core/constants/app_constants.dart';
+import 'package:vocario/core/utils/app_utils.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/core/services/logger_service.dart';
 
-class ImportAudioUseCase {
-  static const List<String> allowedExtensions = ['mp3', 'wav', 'aac', 'm4a', 'ogg', 'flac'];
+part 'import_audio.g.dart';
 
+@riverpod
+ImportAudioUseCase importAudioUseCase(Ref ref) {
+  return ImportAudioUseCase();
+}
+
+class ImportAudioUseCase {
   Future<AudioRecording?> call() async {
     try {
       LoggerService.info('Starting audio file import');
@@ -14,7 +22,7 @@ class ImportAudioUseCase {
       // Open file picker for audio files
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: allowedExtensions,
+        allowedExtensions: AppConstants.supportedAudioFormats,
         allowMultiple: false,
       );
 
@@ -27,19 +35,17 @@ class ImportAudioUseCase {
 
       // Validate file extension
       final extension = pickedFile.extension?.toLowerCase();
-      if (extension == null || !allowedExtensions.contains(extension)) {
-        throw Exception('Unsupported file format. Allowed formats: ${allowedExtensions.join(', ')}');
+      if (extension == null || !AppConstants.supportedAudioFormats.contains(extension)) {
+        throw Exception('Unsupported file format. Allowed formats: ${AppConstants.supportedAudioFormats.join(', ')}');
       }
 
       LoggerService.info('Selected file: ${pickedFile.name}, Size: ${(pickedFile.size / (1024 * 1024)).toStringAsFixed(2)}MB');
 
-      // Copy file to internal storage
       final copiedFile = await _copyToInternalStorage(pickedFile);
       
-      // Create AudioRecording entity
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final recordingId = AppUtils.filePathToID(copiedFile.path);
       final recording = AudioRecording(
-        id: timestamp.toString(),
+        id: recordingId,
         filePath: copiedFile.path,
         duration: Duration.zero, // Will be updated during analysis if needed
         fileSizeBytes: pickedFile.size,
@@ -57,25 +63,27 @@ class ImportAudioUseCase {
 
   Future<File> _copyToInternalStorage(PlatformFile pickedFile) async {
     try {
-      final appDir = await getApplicationDocumentsDirectory();
-      final recordingsDir = Directory('${appDir.path}/recordings');
-      
-      // Create recordings directory if it doesn't exist
-      if (!await recordingsDir.exists()) {
-        await recordingsDir.create(recursive: true);
-      }
+      final audioDir = await AppUtils.getAudioDirectory();
 
-      // Generate unique filename with timestamp
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final extension = pickedFile.extension;
-      final fileName = 'imported_$timestamp.$extension';
-      final destinationPath = '${recordingsDir.path}/$fileName';
+      final fileName = pickedFile.name;
+      final destinationPath = '${audioDir.path}/$fileName';
+      
+      // Check if file already exists and add suffix if needed
+      var finalDestinationPath = destinationPath;
+      var counter = 1;
+      while (await File(finalDestinationPath).exists()) {
+        final nameWithoutExtension = fileName.replaceAll(RegExp(r'\.[^.]*$'), '');
+        final extension = pickedFile.extension;
+        final newFileName = '${nameWithoutExtension}_$counter.$extension';
+        finalDestinationPath = '${audioDir.path}/$newFileName';
+        counter++;
+      }
 
       // Copy file to internal storage
       final sourceFile = File(pickedFile.path!);
-      final destinationFile = await sourceFile.copy(destinationPath);
+      final destinationFile = await sourceFile.copy(finalDestinationPath);
       
-      LoggerService.info('File copied to internal storage: $destinationPath');
+      LoggerService.info('File copied to internal storage: $finalDestinationPath');
       return destinationFile;
     } catch (e) {
       LoggerService.error('Failed to copy file to internal storage', e);

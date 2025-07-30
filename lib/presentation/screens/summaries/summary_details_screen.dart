@@ -27,24 +27,7 @@ class SummaryDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Check if analysis exists, if not start analysis
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAndStartAnalysis();
-    });
-  }
-
-  void _checkAndStartAnalysis() async {
-    final analysis = await ref.read(audioAnalysisByRecordingIdProvider(widget.recordingId).future);
-    if (analysis == null) {
-      final recording = await ref.read(recordingByIdProvider(widget.recordingId).future);
-      if (recording != null) {
-        ref.read(audioAnalyzerNotifierProvider.notifier).analyzeAudio(recording);
-      }
-    }
-  }
+  AudioAnalysis? _previousAnalysis;
 
   @override
   Widget build(BuildContext context) {
@@ -206,21 +189,23 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            analysisAsync.when(
-              data: (analysis) {
-                 if (analysis != null && analysis.status == AnalysisStatus.completed) {
-                   return _buildAnalysisContent(context, analysis);
-                 } else if (analyzerState == AudioAnalyzerState.analyzing) {
-                   return _buildAnalysisLoading(context);
-                 } else if (analyzerState == AudioAnalyzerState.error) {
-                   return _buildAnalysisError(context, 'Analysis failed', recording);
-                 } else {
-                   return _buildNoAnalysis(context);
-                 }
-               },
-              loading: () => _buildAnalysisLoading(context),
-              error: (error, stack) => _buildAnalysisError(context, error.toString(), recording),
-            ),
+            ref.watch(reanalysisNotifierProvider)
+                ? _buildAnalysisLoading(context)
+                : analysisAsync.when(
+                    data: (analysis) {
+                      if (analysis != null && analysis.status == AnalysisStatus.completed) {
+                        return _buildAnalysisContent(context, analysis);
+                      } else if (analyzerState == AudioAnalyzerState.analyzing) {
+                        return _buildAnalysisLoading(context);
+                      } else if (analyzerState == AudioAnalyzerState.error) {
+                        return _buildAnalysisError(context, 'Analysis failed', recording);
+                      } else {
+                        return _buildNoAnalysis(context);
+                      }
+                    },
+                    loading: () => _buildAnalysisLoading(context),
+                    error: (error, stack) => _buildAnalysisError(context, error.toString(), recording),
+                  ),
           ],
         ),
       ),
@@ -310,33 +295,21 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
   }
 
   Widget _buildAnalysisError(BuildContext context, String? errorMessage, AudioRecording recording) {
-    return Column(
+    return Row(
       children: [
         Icon(
           Icons.error_outline,
-          size: 48,
+          size: 36,
           color: Theme.of(context).colorScheme.error,
         ),
-        const SizedBox(height: 16),
-        Text(
-          'Analysis Failed',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: Theme.of(context).colorScheme.error,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            errorMessage ?? 'Analysis Failed',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          errorMessage ?? 'An error occurred during analysis',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton.icon(
-          onPressed: () => _reanalyzeRecording(recording),
-          icon: const Icon(Icons.refresh),
-          label: const Text('Retry Analysis'),
         ),
       ],
     );
@@ -372,7 +345,7 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
       children: [
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: () => _reanalyzeRecording(recording),
+            onPressed: ref.watch(reanalysisNotifierProvider) ? null : () => _reanalyzeRecording(recording),
             icon: const Icon(Icons.refresh),
             label: const Text('Reanalyze'),
           ),
@@ -480,14 +453,38 @@ class _SummaryDetailsScreenState extends ConsumerState<SummaryDetailsScreen> {
   }
 
   Future<void> _reanalyzeRecording(AudioRecording recording) async {
+    if (ref.read(reanalysisNotifierProvider)) return;
+    
     try {
+      ref.read(reanalysisNotifierProvider.notifier).setReanalyzing(true);
+      
+      // Store previous analysis for potential restoration
+      final currentAnalysis = await ref.read(audioAnalysisByRecordingIdProvider(widget.recordingId).future);
+      _previousAnalysis = currentAnalysis;
+      
       await ref.read(audioAnalyzerNotifierProvider.notifier).analyzeAudio(recording);
       
       // Invalidate providers to refresh the UI after analysis completes
       ref.invalidate(audioAnalysisByRecordingIdProvider(widget.recordingId));
       ref.invalidate(audioAnalysesListProvider);
+      
+      ref.read(reanalysisNotifierProvider.notifier).setReanalyzing(false);
     } catch (e) {
       LoggerService.error('Failed to reanalyze recording', e);
+      
+      ref.read(reanalysisNotifierProvider.notifier).setReanalyzing(false);
+      
+      if (mounted) {
+        context.showSnackBar(
+          'Reanalysis failed. Previous analysis restored.',
+          isError: true,
+        );
+      }
+      
+      // Restore previous analysis if available
+      if (_previousAnalysis != null) {
+        ref.invalidate(audioAnalysisByRecordingIdProvider(widget.recordingId));
+      }
     }
   }
 

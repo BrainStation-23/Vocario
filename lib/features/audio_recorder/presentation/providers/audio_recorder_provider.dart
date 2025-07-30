@@ -204,6 +204,23 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
     }
   }
 
+  void setAnalyzingState(AudioRecording recording) {
+    state = state.copyWith(
+      state: RecorderState.analyzing,
+      recording: recording,
+    );
+  }
+
+  void setCompletedState() {
+    state = state.copyWith(
+      state: RecorderState.completed,
+    );
+  }
+
+  bool isRecordOrAnalyzeOngoing() {
+    return state.state == RecorderState.recording || state.state == RecorderState.analyzing;
+  }
+
   void _listenToRecordingUpdates() {
     final repository = ref.read(audioRecorderRepositoryProvider);
     

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:vocario/core/constants/app_constants.dart';
 
 class AppUtils {
@@ -86,6 +89,23 @@ class AppUtils {
       message = message.replaceAll('{$key}', value);
     });
     return message;
+  }
+
+  static Future<Directory> getAudioDirectory() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final audioDir = Directory('${appDir.path}/audio');
+    if (!await audioDir.exists()) {
+      await audioDir.create(recursive: true);
+    }
+
+    return audioDir;
+  }
+
+  /// Converts a file path to an ID by removing the file extension and replacing spaces with underscores.
+  static String filePathToID(String path) {
+     final fileName = path.split('/').last;
+     final fileNameWithoutExtension = fileName.replaceAll(RegExp(r'\.[^.]*$'), '');
+     return fileNameWithoutExtension.replaceAll(RegExp(r'\s+'), '_');
   }
 }
 

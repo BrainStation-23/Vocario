@@ -16,3 +16,13 @@ Future<AudioRecording?> recordingById(Ref ref, String id) async {
   final repository = ref.watch(audioRecorderRepositoryProvider);
   return await repository.getRecordingById(id);
 }
+
+@riverpod
+class ReanalysisNotifier extends _$ReanalysisNotifier {
+  @override
+  bool build() => false;
+
+  void setReanalyzing(bool value) {
+    state = value;
+  }
+}

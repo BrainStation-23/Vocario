@@ -1,0 +1,66 @@
+name: Deploy to Play Store Internal Test
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+
+jobs:
+  deploy_android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - run: flutter pub get
+
+      - name: Set Bundle Version Code
+        # Increments the build number (bundleVersionCode) in pubspec.yaml.
+        # This uses 'yq' to update the version directly in pubspec.yaml.
+        # The new version will be 'current_version.build_number+RUN_NUMBER'.
+        # Example: if version is 1.0.0+1, it becomes 1.0.0+<GitHub_Run_Number>
+        run: |
+          BUILD_NUMBER=${{ github.run_number }}
+          CURRENT_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}')
+          BASE_VERSION=$(echo $CURRENT_VERSION | cut -d'+' -f1)
+          NEW_VERSION="$BASE_VERSION+$BUILD_NUMBER"
+          echo "Updating pubspec.yaml version from $CURRENT_VERSION to $NEW_VERSION"
+          yq e '.version = "'$NEW_VERSION'"' -i pubspec.yaml
+          cat pubspec.yaml
+        shell: bash
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+        shell: bash
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=upload-keystore.jks" > android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        shell: bash
+
+      - name: Build Android App Bundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: Sign App Bundle
+        run: |
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
+          -keystore android/app/upload-keystore.jks \
+          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+          android/app/build/app/outputs/bundle/release/app-release.aab \
+          ${{ secrets.KEY_ALIAS }}
+        shell: bash
+
+      - name: Upload to Play Store Internal Test Track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          aabFile: android/app/build/app/outputs/bundle/release/app-release.aab
+          serviceAccountJson: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          track: internal
+          status: completed

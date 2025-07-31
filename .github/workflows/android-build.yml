@@ -61,7 +61,7 @@ jobs:
       - name: 🔏 Sign AAB with Keystore
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: android/app/build/app/outputs/bundle/release
+          releaseDirectory: build/app/outputs/bundle/release
           signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -70,7 +70,7 @@ jobs:
       - name: 📤 Upload to Play Store (Internal Track)
         uses: r0adkll/upload-google-play@v1
         with:
-          aabFile: android/app/build/app/outputs/bundle/release/app-release.aab
+          aabFile: build/app/outputs/bundle/release/app-release.aab
           serviceAccountJson: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           track: internal
           status: completed

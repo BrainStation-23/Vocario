@@ -319,5 +319,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analysisFailed => 'Analysis failed';
 
   @override
-  String get failedToImportAudio => 'Failed to import audio';
+  String get failedToImportMedia => 'Failed to import media';
+
+  @override
+  String get failedToAnalyzeMedia => 'Failed to analyze media';
 }

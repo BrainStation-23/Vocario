@@ -656,11 +656,17 @@ abstract class AppLocalizations {
   /// **'Analysis failed'**
   String get analysisFailed;
 
-  /// Error message when audio import fails
+  /// Error message when media import fails
   ///
   /// In en, this message translates to:
-  /// **'Failed to import audio'**
-  String get failedToImportAudio;
+  /// **'Failed to import media'**
+  String get failedToImportMedia;
+
+  /// Error message when media analysis fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to analyze media'**
+  String get failedToAnalyzeMedia;
 }
 
 class _AppLocalizationsDelegate

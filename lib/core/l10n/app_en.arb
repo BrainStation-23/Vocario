@@ -418,8 +418,12 @@
   "@analysisFailed": {
     "description": "Error message when audio analysis fails"
   },
-  "failedToImportAudio": "Failed to import audio",
-  "@failedToImportAudio": {
-    "description": "Error message when audio import fails"
+  "failedToImportMedia": "Failed to import media",
+  "@failedToImportMedia": {
+    "description": "Error message when media import fails"
+  },
+  "failedToAnalyzeMedia": "Failed to analyze media",
+  "@failedToAnalyzeMedia": {
+    "description": "Error message when media analysis fails"
   }
 }

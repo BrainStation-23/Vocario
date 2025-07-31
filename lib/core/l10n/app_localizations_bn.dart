@@ -318,5 +318,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get analysisFailed => 'বিশ্লেষণ ব্যর্থ';
 
   @override
-  String get failedToImportAudio => 'অডিও ইম্পোর্ট করতে ব্যর্থ';
+  String get failedToImportMedia => 'মিডিয়া ইম্পোর্ট করতে ব্যর্থ';
+
+  @override
+  String get failedToAnalyzeMedia => 'মিডিয়া বিশ্লেষণ করতে ব্যর্থ';
 }

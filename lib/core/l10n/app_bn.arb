@@ -417,8 +417,12 @@
   "@analysisFailed": {
     "description": "Error message when audio analysis fails"
   },
-  "failedToImportAudio": "অডিও ইম্পোর্ট করতে ব্যর্থ",
-  "@failedToImportAudio": {
-    "description": "Error message when audio import fails"
+  "failedToImportMedia": "মিডিয়া ইম্পোর্ট করতে ব্যর্থ",
+  "@failedToImportMedia": {
+    "description": "Error message when media import fails"
+  },
+  "failedToAnalyzeMedia": "মিডিয়া বিশ্লেষণ করতে ব্যর্থ",
+  "@failedToAnalyzeMedia": {
+    "description": "Error message when media analysis fails"
   }
 }

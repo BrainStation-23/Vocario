@@ -7,14 +7,16 @@ on:
 
 jobs:
   deploy_android:
-    runs-on: ubuntu-latest
+    # Use a Docker container for the job's execution environment.
+    # This image typically includes Flutter, Android SDK, Java, and NDK.
+    container: cirrusci/flutter:stable
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
+      # Removed:
+      # - name: Setup Java (as Java is included in the Docker image)
+      # - name: Setup Flutter (as Flutter is included in the Docker image)
 
       - run: flutter pub get
 
@@ -71,5 +73,3 @@ jobs:
           serviceAccountJson: ${{ secrets.GOOGLE_SERVICES_JSON }}
           track: internal
           status: completed
-
-    

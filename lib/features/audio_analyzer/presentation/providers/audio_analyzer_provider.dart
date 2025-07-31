@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vocario/features/audio_analyzer/data/repositories/audio_analyzer_repository_impl.dart';
-import 'package:vocario/features/audio_analyzer/data/services/gemini_api_service.dart';
+import 'package:vocario/core/services/network_service/gemini_api_service.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_analyzer/domain/repositories/audio_analyzer_repository.dart';
 import 'package:vocario/features/audio_analyzer/domain/usecases/analyze_audio.dart';

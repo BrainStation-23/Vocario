@@ -2,10 +2,8 @@ class AppConstants {
   // App Information
   static const String appName = 'Vocario';
   static const String appDescription = 'AI Audio Summarizer';
-  static const String appVersion = '1.0.0';
 
   // API Configuration
-  static const String baseUrl = 'https://api.vocario.com';
   static const int connectionTimeout = 30000; // 30 seconds
   static const int receiveTimeout = 30000; // 30 seconds
 

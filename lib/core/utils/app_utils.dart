@@ -1,5 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:vocario/core/constants/app_constants.dart';
+import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/core/utils/context_extensions.dart';
+import 'package:vocario/core/utils/format_utils.dart';
+import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
+import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 
 class AppUtils {
   // File size validation
@@ -86,6 +96,84 @@ class AppUtils {
       message = message.replaceAll('{$key}', value);
     });
     return message;
+  }
+
+  static Future<Directory> getAudioDirectory() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final audioDir = Directory('${appDir.path}/audio');
+    if (!await audioDir.exists()) {
+      await audioDir.create(recursive: true);
+    }
+
+    return audioDir;
+  }
+
+  /// Converts a file path to an ID by removing the file extension and replacing spaces with underscores.
+  static String filePathToID(String path) {
+     final fileName = path.split('/').last;
+     final fileNameWithoutExtension = fileName.replaceAll(RegExp(r'\.[^.]*$'), '');
+     return fileNameWithoutExtension.replaceAll(RegExp(r'\s+'), '_');
+  }
+
+  // Share audio file
+  static Future<void> shareAudioFile(AudioRecording recording, BuildContext context) async {
+    try {
+      final file = File(recording.filePath);
+      if (await file.exists()) {
+        final xFile = XFile(recording.filePath);
+        await Share.shareXFiles(
+          [xFile],
+          text: 'Audio recording from ${FormatUtils.formatDate(recording.createdAt)}',
+        );
+      } else {
+        if (context.mounted) {
+          context.showSnackBar('Audio file not found', isError: true);
+        }
+      }
+    } catch (e) {
+      LoggerService.error('Failed to share audio file', e);
+      if (context.mounted) {
+        context.showSnackBar('Failed to share audio file: $e', isError: true);
+      }
+    }
+  }
+
+  // Share analysis text
+  static Future<void> shareAnalysisText(AsyncValue<AudioAnalysis?> analysisAsync, BuildContext context) async {
+    try {
+      final analysis = analysisAsync.value;
+      if (analysis != null && analysis.content.isNotEmpty) {
+        String textContent = analysis.content
+            .replaceAll(RegExp(r'^#{1,6}\s+'), '')
+            .replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1')
+            .replaceAll(RegExp(r'\*(.*?)\*'), r'$1')
+            .replaceAll(RegExp(r'_(.*?)_'), r'$1')
+            .replaceAll(RegExp(r'`(.*?)`'), r'$1')
+            .replaceAll(RegExp(r'\[(.*?)\]\(.*?\)'), r'$1')
+            .replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '')
+            .replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '')
+            .replaceAll(RegExp(r'^\s*>\s+', multiLine: true), '')
+            .replaceAll(RegExp(r'\n\s*\n'), '\n')
+            .trim();
+        
+        await Share.share(
+          textContent,
+          subject: 'Audio Analysis Results',
+        );
+      } else {
+        if (context.mounted) {
+          context.showSnackBar('No analysis content available to share', isError: true);
+        }
+      }
+    } catch (e) {
+      LoggerService.error('Failed to share analysis text', e);
+      if (context.mounted) {
+        context.showSnackBar(
+          'Failed to share analysis text: $e',
+          isError: true,
+        );
+      }
+    }
   }
 }
 

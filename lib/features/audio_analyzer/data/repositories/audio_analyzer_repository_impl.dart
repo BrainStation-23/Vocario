@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:vocario/core/services/network_service/network_exception.dart';
 import 'package:vocario/features/audio_analyzer/data/models/audio_analysis_model.dart';
-import 'package:vocario/features/audio_analyzer/data/services/gemini_api_service.dart';
+import 'package:vocario/core/services/network_service/gemini_api_service.dart';
+import 'package:vocario/core/services/network_service/network_utils.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
 
@@ -36,7 +38,7 @@ class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
       try {
         // Upload audio file to Gemini
         final fileUri = await _geminiApiService.uploadAudioFile(recording.filePath);
-        final mimeType = _getMimeType(recording.filePath);
+        final mimeType = getMimeType(recording.filePath);
         
         // Get usage context from storage
         AudioSummarizationContext? usageContext;
@@ -73,7 +75,7 @@ class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
         // Save failed analysis
         final failedAnalysis = analysis.copyWith(
           status: AnalysisStatus.failed,
-          errorMessage: e.toString(),
+          errorMessage: e is NetworkException ? e.message : e.toString(),
           completedAt: DateTime.now(),
         );
         
@@ -176,25 +178,5 @@ class AudioAnalyzerRepositoryImpl implements AudioAnalyzerRepository {
   Future<File> _getAnalysesFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/$_analysesFileName');
-  }
-
-  String _getMimeType(String filePath) {
-    final extension = filePath.split('.').last.toLowerCase();
-    switch (extension) {
-      case 'mp3':
-        return 'audio/mpeg';
-      case 'wav':
-        return 'audio/wav';
-      case 'aac':
-        return 'audio/aac';
-      case 'm4a':
-        return 'audio/mp4';
-      case 'ogg':
-        return 'audio/ogg';
-      case 'flac':
-        return 'audio/flac';
-      default:
-        return 'audio/mpeg';
-    }
   }
 }

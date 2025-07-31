@@ -2,7 +2,7 @@ name: vocario
 description: "AI Audio Summarizer"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+20250731
 
 environment:
   sdk: ^3.8.1
@@ -32,6 +32,8 @@ dependencies:
   share_plus: ^10.1.2
   file_picker: ^8.1.2
   markdown_widget: ^2.3.2+8
+  firebase_core:  4.0.0
+  firebase_crashlytics:  5.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,107 +1,84 @@
-name: Build Android APK and AAB
+name: Build and Upload Android AAB
 
 on:
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Build type (debug or release)'
-        required: true
-        default: 'release'
-        type: choice
-        options:
-          - debug
-          - release
-      build_format:
-        description: 'Build format'
-        required: true
-        default: 'both'
-        type: choice
-        options:
-          - apk
-          - aab
-          - both
 
 jobs:
-  build:
+  build_and_upload:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-        
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.6'
-        channel: 'stable'
-        cache: true
-        
-    - name: Create keystore file
-      run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/@tanim2025__vocario-keystore.bak.jks
-        
-    - name: Create credentials file
-      run: |
-        echo "storePassword:${{ secrets.KEYSTORE_PASSWORD }}" > android/credentials.txt
-        echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/credentials.txt
-        echo "keyAlias:${{ secrets.KEY_ALIAS }}" >> android/credentials.txt
-        echo "storeFile:@tanim2025__vocario-keystore.bak.jks" >> android/credentials.txt
-        
-    - name: Create Firebase config files
-      run: |
-        # Create google-services.json from secrets
-        echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/src/google-services.json
-        
-    - name: Get dependencies
-      run: flutter pub get
-      
-    # - name: Run tests
-      # run: flutter test
-      
-    - name: Build APK (Debug)
-      if: ${{ github.event.inputs.build_type == 'debug' && (github.event.inputs.build_format == 'apk' || github.event.inputs.build_format == 'both') }}
-      run: flutter build apk --debug
-      
-    - name: Build APK (Release)
-      if: ${{ github.event.inputs.build_type == 'release' && (github.event.inputs.build_format == 'apk' || github.event.inputs.build_format == 'both') }}
-      run: flutter build apk --release
-      
-    - name: Build AAB (Debug)
-      if: ${{ github.event.inputs.build_type == 'debug' && (github.event.inputs.build_format == 'aab' || github.event.inputs.build_format == 'both') }}
-      run: flutter build appbundle --debug
-      
-    - name: Build AAB (Release)
-      if: ${{ github.event.inputs.build_type == 'release' && (github.event.inputs.build_format == 'aab' || github.event.inputs.build_format == 'both') }}
-      run: flutter build appbundle --release
-      
-    - name: Upload APK artifacts
-      if: ${{ github.event.inputs.build_format == 'apk' || github.event.inputs.build_format == 'both' }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-apk-${{ github.event.inputs.build_type }}
-        path: |
-          build/app/outputs/flutter-apk/*.apk
-          build/app/outputs/apk/**/*.apk
-        retention-days: 30
-        
-    - name: Upload AAB artifacts
-      if: ${{ github.event.inputs.build_format == 'aab' || github.event.inputs.build_format == 'both' }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-aab-${{ github.event.inputs.build_type }}
-        path: |
-          build/app/outputs/bundle/**/*.aab
-        retention-days: 30
-        
-    - name: Clean up sensitive files
-      if: always()
-      run: |
-        rm -f android/@tanim2025__vocario-keystore.bak.jks
-        rm -f android/credentials.txt
-        rm -f android/app/src/google-services.json
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: 'stable'
+          cache: true
+
+      - name: Install yq
+        run: |
+          YQ_VERSION="v4.44.3"
+          wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+        shell: bash
+
+      - name: Set Bundle Version Code
+        run: |
+          BUILD_NUMBER=${{ github.run_number }}
+          CURRENT_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}')
+          BASE_VERSION=$(echo $CURRENT_VERSION | cut -d'+' -f1)
+          NEW_VERSION="$BASE_VERSION+$BUILD_NUMBER"
+          echo "Updating pubspec.yaml version from $CURRENT_VERSION to $NEW_VERSION"
+          yq e '.version = "'$NEW_VERSION'"' -i pubspec.yaml
+          cat pubspec.yaml
+        shell: bash
+
+      - name: Create keystore file
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/@tanim2025__vocario-keystore.bak.jks
+        shell: bash
+
+      - name: Create credentials file
+        run: |
+          echo "storePassword:${{ secrets.KEYSTORE_PASSWORD }}" > android/credentials.txt
+          echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/credentials.txt
+          echo "keyAlias:${{ secrets.KEY_ALIAS }}" >> android/credentials.txt
+          echo "storeFile:@tanim2025__vocario-keystore.bak.jks" >> android/credentials.txt
+        shell: bash
+
+      - name: Create Firebase config files
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/src/google-services.json
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run build runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Android App Bundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: Sign App Bundle
+        run: |
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
+            -keystore android/@tanim2025__vocario-keystore.bak.jks \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            android/app/build/app/outputs/bundle/release/app-release.aab \
+            ${{ secrets.KEY_ALIAS }}
+        shell: bash
+
+      - name: Upload to Play Store Internal Test Track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          aabFile: android/app/build/app/outputs/bundle/release/app-release.aab
+          serviceAccountJson: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          track: internal
+          status: completed

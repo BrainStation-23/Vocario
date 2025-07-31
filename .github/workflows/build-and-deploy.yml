@@ -9,16 +9,22 @@ jobs:
   deploy_android:
     # Specify the host runner where the container will execute.
     runs-on: ubuntu-latest
-    # Use a Docker container with Flutter, Android SDK, and NDK pre-installed.
-    # Using a specific version tag for stability.
-    container: gmeligio/flutter-android:3.32.7
+    # Use the specified Docker container from GitHub Container Registry.
+    container: ghcr.io/cirruslabs/flutter:latest
 
     steps:
       - uses: actions/checkout@v4
 
-      # Removed: subosito/flutter-action as Flutter is pre-installed in the container.
-
       - run: flutter pub get
+
+      - name: Install yq
+        # yq is a lightweight YAML processor. It's not always pre-installed,
+        # so we download the latest stable binary and make it executable.
+        run: |
+          YQ_VERSION="v4.44.3" # You can check for the latest version on GitHub: https://github.com/mikefarah/yq/releases
+          wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+        shell: bash
 
       - name: Set Bundle Version Code
         # Increments the build number (bundleVersionCode) in pubspec.yaml.
@@ -42,7 +48,7 @@ jobs:
         # Creates 'credentials.txt' in the android/ directory with the format expected by build.gradle.kts.
         run: |
           echo "storePassword:${{ secrets.KEYSTORE_PASSWORD }}" > android/credentials.txt
-          echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/key.properties # This was credentials.txt before, changed to key.properties
+          echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/credentials.txt
           echo "keyAlias:${{ secrets.KEY_ALIAS }}" >> android/credentials.txt
           echo "storeFile:@tanim2025__vocario-keystore.bak.jks" >> android/credentials.txt
         shell: bash

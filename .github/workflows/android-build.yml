@@ -1,4 +1,4 @@
-name: Build and Upload Android AAB
+name: 🚀 Build and Upload Android AAB
 
 on:
   workflow_dispatch:
@@ -8,30 +8,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 🛎️ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: ☕ Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Flutter
+      - name: 🐦 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.32.6'
           channel: 'stable'
           cache: true
 
-      - name: Install yq
+      - name: 🛠️ Install yq
         run: |
           YQ_VERSION="v4.44.3"
           wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
         shell: bash
 
-      - name: Set Bundle Version Code
+      - name: 🔢 Set Bundle Version Code
         run: |
           BUILD_NUMBER=${{ github.run_number }}
           CURRENT_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}')
@@ -42,40 +42,32 @@ jobs:
           cat pubspec.yaml
         shell: bash
 
-      - name: Create keystore file
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/@tanim2025__vocario-keystore.bak.jks
+      - name: 🔐 Create Keystore File
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
         shell: bash
 
-      - name: Create credentials file
-        run: |
-          echo "storePassword:${{ secrets.KEYSTORE_PASSWORD }}" > android/credentials.txt
-          echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/credentials.txt
-          echo "keyAlias:${{ secrets.KEY_ALIAS }}" >> android/credentials.txt
-          echo "storeFile:@tanim2025__vocario-keystore.bak.jks" >> android/credentials.txt
-        shell: bash
-
-      - name: Create Firebase config files
+      - name: 🔧 Create Firebase Config
         run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/src/google-services.json
 
-      - name: Get dependencies
+      - name: 📦 Get Dependencies
         run: flutter pub get
 
-      - name: Run build runner
+      - name: 🧹 Run Build Runner
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Build Android App Bundle (AAB)
+      - name: 🧱 Build Android App Bundle (AAB)
         run: flutter build appbundle --release
 
-      - name: Sign App Bundle
-        run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
-            -keystore android/@tanim2025__vocario-keystore.bak.jks \
-            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-            android/app/build/app/outputs/bundle/release/app-release.aab \
-            ${{ secrets.KEY_ALIAS }}
-        shell: bash
+      - name: 🔏 Sign AAB with Keystore
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: android/app/build/app/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Upload to Play Store Internal Test Track
+      - name: 📤 Upload to Play Store (Internal Track)
         uses: r0adkll/upload-google-play@v1
         with:
           aabFile: android/app/build/app/outputs/bundle/release/app-release.aab

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/utils/app_utils.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
@@ -16,13 +17,15 @@ class ShareOptionsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return AlertDialog(
-      title: const Text('Share Options'),
-      content: const Text('What would you like to share?'),
+      title: Text(localizations.shareOptions),
+      content: Text(localizations.shareOptionsDescription),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(localizations.cancel),
         ),
         ElevatedButton.icon(
           onPressed: () {
@@ -30,7 +33,7 @@ class ShareOptionsDialog extends StatelessWidget {
             AppUtils.shareAudioFile(recording, context);
           },
           icon: const Icon(Icons.audiotrack),
-          label: const Text('Share Audio File'),
+          label: Text(localizations.shareAudioFile),
         ),
         ElevatedButton.icon(
           onPressed: () {
@@ -38,7 +41,7 @@ class ShareOptionsDialog extends StatelessWidget {
             AppUtils.shareAnalysisText(analysisAsync, context);
           },
           icon: const Icon(Icons.text_snippet),
-          label: const Text('Share Analysis Text'),
+          label: Text(localizations.shareAnalysisText),
         ),
       ],
     );

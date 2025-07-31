@@ -78,10 +78,11 @@ class ApiKeySection extends StatelessWidget {
   }
 
   Future<void> _saveApiKey(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
     final apiKey = controller.text.trim();
     
     if (apiKey.isEmpty) {
-      context.showSnackBar('Please enter an API key', isError: true);
+      context.showSnackBar(localizations.pleaseEnterApiKey, isError: true);
       return;
     }
 
@@ -89,14 +90,14 @@ class ApiKeySection extends StatelessWidget {
       await StorageService.saveApiKey(apiKey);
       
       if (context.mounted) {
-        context.showSnackBar('API key saved successfully');
+        context.showSnackBar(localizations.apiKeySavedSuccessfully);
       }
       
       onApiKeySaved?.call();
     } catch (e) {
       if (context.mounted) {
         context.showSnackBar(
-          'Failed to save API key: $e',
+          '${localizations.failedToSaveApiKey}: $e',
           isError: true,
         );
       }

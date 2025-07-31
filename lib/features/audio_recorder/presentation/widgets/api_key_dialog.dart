@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/theme/app_text_styles.dart';
 
 class ApiKeyDialog extends StatelessWidget {
@@ -7,6 +8,7 @@ class ApiKeyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
 
     return Dialog(
@@ -32,7 +34,7 @@ class ApiKeyDialog extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'API Key Required',
+                  localizations.apiKeyRequired,
                   style: appTextStyles.headlineText.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
@@ -42,14 +44,14 @@ class ApiKeyDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'To analyze your audio recordings, Vocario needs a Gemini API key. This key is stored securely on your device and is only used to process your audio content.',
+              localizations.apiKeyDescription,
               style: appTextStyles.bodyText.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '• Your API key is stored locally and encrypted\n• No data is shared with third parties\n• You maintain full control over your API usage',
+              localizations.apiKeySecurityInfo,
               style: appTextStyles.bodyText.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 12,
@@ -62,7 +64,7 @@ class ApiKeyDialog extends StatelessWidget {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Cancel',
+                    localizations.cancel,
                     style: appTextStyles.buttonText.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -82,7 +84,7 @@ class ApiKeyDialog extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Go to Settings',
+                    localizations.goToSettings,
                     style: appTextStyles.buttonText.copyWith(
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),

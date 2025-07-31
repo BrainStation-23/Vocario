@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 
 class AnalysisError extends StatelessWidget {
@@ -13,6 +14,8 @@ class AnalysisError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Row(
       children: [
         Icon(
@@ -23,7 +26,7 @@ class AnalysisError extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: Text(
-            errorMessage ?? 'Analysis Failed',
+            errorMessage ?? localizations.analysisFailed,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Theme.of(context).colorScheme.error,
             ),

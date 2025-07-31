@@ -122,7 +122,7 @@ abstract class AppLocalizations {
   /// **'Import Video'**
   String get importVideo;
 
-  /// Settings screen title
+  /// Menu item for settings
   ///
   /// In en, this message translates to:
   /// **'Settings'**
@@ -206,17 +206,461 @@ abstract class AppLocalizations {
   /// **'Your API key is stored locally on your device and never shared. It\'s required for generating meeting summaries.'**
   String get apiKeyInfo;
 
-  /// Snackbar message for import audio
+  /// Menu item for about us
   ///
   /// In en, this message translates to:
-  /// **'Import Audio feature coming soon!'**
-  String get importAudioFeatureComingSoon;
+  /// **'About Us'**
+  String get aboutUs;
 
-  /// Snackbar message for import video
+  /// Mission section title
   ///
   /// In en, this message translates to:
-  /// **'Import Video feature coming soon!'**
-  String get importVideoFeatureComingSoon;
+  /// **'Our Mission'**
+  String get ourMission;
+
+  /// Vision section title
+  ///
+  /// In en, this message translates to:
+  /// **'Our Vision'**
+  String get ourVision;
+
+  /// App purpose section title
+  ///
+  /// In en, this message translates to:
+  /// **'Why We Built Vocario'**
+  String get whyWeBuildVocario;
+
+  /// Contact section title
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Us'**
+  String get contactUs;
+
+  /// Website contact label
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get website;
+
+  /// Email contact label
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// Company name
+  ///
+  /// In en, this message translates to:
+  /// **'Brain Station 23'**
+  String get companyName;
+
+  /// Company tagline
+  ///
+  /// In en, this message translates to:
+  /// **'Leading Software Development & IT Service Provider'**
+  String get companyTagline;
+
+  /// Company mission statement
+  ///
+  /// In en, this message translates to:
+  /// **'Your trusted companion for digital leadership by empowering people to achieve more with less'**
+  String get missionContent;
+
+  /// Company vision statement
+  ///
+  /// In en, this message translates to:
+  /// **'To be the fastest digital transformation and innovation partner by engaging global talents thus creating positive impact.'**
+  String get visionContent;
+
+  /// App purpose description
+  ///
+  /// In en, this message translates to:
+  /// **'We developed Vocario as part of our commitment to serve our country by providing innovative solutions that help people communicate more effectively and efficiently through voice technology.'**
+  String get appPurposeContent;
+
+  /// Copyright notice
+  ///
+  /// In en, this message translates to:
+  /// **'© 2024 Brain Station 23 PLC. All rights reserved.'**
+  String get copyright;
+
+  /// Status message during analysis
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing...'**
+  String get analyzing;
+
+  /// Title for usage context selection dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Select Usage Context'**
+  String get selectUsageContext;
+
+  /// Doctor consultation context type
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Consultation'**
+  String get doctorConsultation;
+
+  /// Meeting minutes context type
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting Minutes'**
+  String get meetingMinutes;
+
+  /// Lecture summary context type
+  ///
+  /// In en, this message translates to:
+  /// **'Lecture Summary'**
+  String get lectureSummary;
+
+  /// Cooking instructions context type
+  ///
+  /// In en, this message translates to:
+  /// **'Cooking Instructions'**
+  String get cookingInstructions;
+
+  /// Description for doctor consultation context
+  ///
+  /// In en, this message translates to:
+  /// **'Summarize medical consultations with structured clinical information'**
+  String get doctorConsultationDescription;
+
+  /// Description for meeting minutes context
+  ///
+  /// In en, this message translates to:
+  /// **'Generate structured meeting summaries with action items and decisions'**
+  String get meetingMinutesDescription;
+
+  /// Description for lecture summary context
+  ///
+  /// In en, this message translates to:
+  /// **'Create educational summaries with key concepts and learning points'**
+  String get lectureSummaryDescription;
+
+  /// Description for cooking instructions context
+  ///
+  /// In en, this message translates to:
+  /// **'Extract step-by-step cooking instructions with ingredients and techniques'**
+  String get cookingInstructionsDescription;
+
+  /// Error message when reanalysis fails
+  ///
+  /// In en, this message translates to:
+  /// **'Reanalysis failed. Previous analysis restored.'**
+  String get reanalysisFailed;
+
+  /// Success message after deleting recording
+  ///
+  /// In en, this message translates to:
+  /// **'Recording and analysis deleted successfully'**
+  String get recordingDeletedSuccessfully;
+
+  /// Error message when deletion fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete: {error}'**
+  String failedToDelete(String error);
+
+  /// Description for usage context selection
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the type of content you\'re recording to get the best summarization results.'**
+  String get usageContextDescription;
+
+  /// Cancel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Label for recording mode display
+  ///
+  /// In en, this message translates to:
+  /// **'Recording Mode'**
+  String get recordingMode;
+
+  /// Change button text
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// Title for API key required dialog
+  ///
+  /// In en, this message translates to:
+  /// **'API Key Required'**
+  String get apiKeyRequired;
+
+  /// Description for API key requirement
+  ///
+  /// In en, this message translates to:
+  /// **'To analyze your audio recordings, Vocario needs a Gemini API key. This key is stored securely on your device and is only used to process your audio content.'**
+  String get apiKeyDescription;
+
+  /// Security information about API key
+  ///
+  /// In en, this message translates to:
+  /// **'• Your API key is stored locally and encrypted\n• No data is shared with third parties\n• You maintain full control over your API usage'**
+  String get apiKeySecurityInfo;
+
+  /// Button text to navigate to settings
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Settings'**
+  String get goToSettings;
+
+  /// Title for analysis results section
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis Results'**
+  String get analysisResults;
+
+  /// Title for share options dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Share Options'**
+  String get shareOptions;
+
+  /// Description for share options
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to share?'**
+  String get shareOptionsDescription;
+
+  /// Option to share audio file
+  ///
+  /// In en, this message translates to:
+  /// **'Share Audio File'**
+  String get shareAudioFile;
+
+  /// Option to share analysis text
+  ///
+  /// In en, this message translates to:
+  /// **'Share Analysis Text'**
+  String get shareAnalysisText;
+
+  /// Message when no analysis is available
+  ///
+  /// In en, this message translates to:
+  /// **'No Analysis Available'**
+  String get noAnalysisAvailable;
+
+  /// Message to encourage starting analysis
+  ///
+  /// In en, this message translates to:
+  /// **'Start analysis to get insights from your recording'**
+  String get startAnalysisMessage;
+
+  /// Label for duration
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// Label for creation date
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get created;
+
+  /// Title for audio player section
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Player'**
+  String get audioPlayer;
+
+  /// Title for recording details section
+  ///
+  /// In en, this message translates to:
+  /// **'Recording Details'**
+  String get recordingDetails;
+
+  /// Error message when recording is not found
+  ///
+  /// In en, this message translates to:
+  /// **'Recording not found'**
+  String get recordingNotFound;
+
+  /// Error message when recording fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load recording'**
+  String get failedToLoadRecording;
+
+  /// Title for recording information section
+  ///
+  /// In en, this message translates to:
+  /// **'Recording Information'**
+  String get recordingInformation;
+
+  /// Label for file name
+  ///
+  /// In en, this message translates to:
+  /// **'File Name'**
+  String get fileName;
+
+  /// Label for file size
+  ///
+  /// In en, this message translates to:
+  /// **'File Size'**
+  String get fileSize;
+
+  /// Button text to reanalyze
+  ///
+  /// In en, this message translates to:
+  /// **'Reanalyze'**
+  String get reanalyze;
+
+  /// Share button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// Delete button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Title when analysis is complete
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis Complete'**
+  String get analysisComplete;
+
+  /// Message during AI processing
+  ///
+  /// In en, this message translates to:
+  /// **'AI is processing your recording...'**
+  String get aiProcessingMessage;
+
+  /// Message about processing time
+  ///
+  /// In en, this message translates to:
+  /// **'This may take a few moments'**
+  String get processingTimeMessage;
+
+  /// Message when no recordings exist
+  ///
+  /// In en, this message translates to:
+  /// **'No recordings yet'**
+  String get noRecordingsYet;
+
+  /// Message to encourage starting recording
+  ///
+  /// In en, this message translates to:
+  /// **'Start recording to see your summaries here'**
+  String get startRecordingMessage;
+
+  /// Error message when recordings fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load recordings'**
+  String get failedToLoadRecordings;
+
+  /// Title for delete recording dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Recording'**
+  String get deleteRecording;
+
+  /// Confirmation message for deleting recording
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this recording and its analysis? This action cannot be undone.'**
+  String get deleteConfirmationMessage;
+
+  /// Error message when audio file is not found
+  ///
+  /// In en, this message translates to:
+  /// **'Audio file not found'**
+  String get audioFileNotFound;
+
+  /// Error message when sharing audio file fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to share audio file: {error}'**
+  String failedToShareAudioFile(String error);
+
+  /// Error message when no analysis content is available to share
+  ///
+  /// In en, this message translates to:
+  /// **'No analysis content available to share'**
+  String get noAnalysisContentToShare;
+
+  /// Error message when sharing analysis text fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to share analysis text: {error}'**
+  String failedToShareAnalysisText(String error);
+
+  /// Subject for sharing audio analysis results
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Analysis Results'**
+  String get audioAnalysisResults;
+
+  /// Dismiss button text
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// Text for sharing audio recording with date
+  ///
+  /// In en, this message translates to:
+  /// **'Audio recording from {date}'**
+  String audioRecordingFrom(String date);
+
+  /// Error message when URL cannot be launched
+  ///
+  /// In en, this message translates to:
+  /// **'Could not launch {url}'**
+  String couldNotLaunch(String url);
+
+  /// Error message when API key field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an API key'**
+  String get pleaseEnterApiKey;
+
+  /// Success message when API key is saved
+  ///
+  /// In en, this message translates to:
+  /// **'API key saved successfully'**
+  String get apiKeySavedSuccessfully;
+
+  /// Error message when API key save fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save API key'**
+  String get failedToSaveApiKey;
+
+  /// Tip message for audio quality
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: For best results, ensure clear audio quality and minimal background noise.'**
+  String get tipMessage;
+
+  /// Menu item for summaries
+  ///
+  /// In en, this message translates to:
+  /// **'Summaries'**
+  String get summaries;
+
+  /// Error message when audio analysis fails
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis failed'**
+  String get analysisFailed;
+
+  /// Error message when audio import fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import audio'**
+  String get failedToImportAudio;
 }
 
 class _AppLocalizationsDelegate

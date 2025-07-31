@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:markdown_widget/widget/all.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 
@@ -12,6 +13,8 @@ class AnalysisContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,7 +31,7 @@ class AnalysisContent extends StatelessWidget {
               const Icon(Icons.check_circle, color: Colors.green, size: 16),
               const SizedBox(width: 4),
               Text(
-                'Analysis Complete',
+                localizations.analysisComplete,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.green,
                   fontWeight: FontWeight.w600,

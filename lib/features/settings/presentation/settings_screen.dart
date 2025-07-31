@@ -54,8 +54,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   const AppearanceSection(),
                   const SizedBox(height: 16),
-                  // const LanguageSection(),
-                  // const SizedBox(height: 16),
+                  const LanguageSection(),
+                  const SizedBox(height: 16),
                   ApiKeySection(
                     controller: _apiKeyController,
                     onLaunchURL: context.launchURL,

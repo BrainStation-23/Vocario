@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/about/presentation/providers/about_data_provider.dart';
 import 'package:vocario/features/about/presentation/widgets/company_header.dart';
 import 'package:vocario/features/about/presentation/widgets/about_section.dart';
@@ -10,11 +11,12 @@ class AboutScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final aboutData = ref.watch(aboutDataProvider);
+    final aboutData = ref.watch(aboutDataProvider(context));
+    final localizations = AppLocalizations.of(context)!;
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Us'),
+        title: Text(localizations.aboutUs),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -25,19 +27,19 @@ class AboutScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             
             AboutSection(
-              title: 'Our Mission',
+              title: aboutData.ourMissionTitle,
               content: aboutData.mission,
               icon: Icons.flag,
             ),
             
             AboutSection(
-              title: 'Our Vision',
+              title: aboutData.ourVisionTitle,
               content: aboutData.vision,
               icon: Icons.visibility,
             ),
             
             AboutSection(
-              title: 'Why We Built Vocario',
+              title: aboutData.whyWeBuildVocarioTitle,
               content: aboutData.appPurpose,
               icon: Icons.mic,
             ),

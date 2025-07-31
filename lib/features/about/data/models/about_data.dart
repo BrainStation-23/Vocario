@@ -11,6 +11,9 @@ class AboutData extends Equatable {
   final String websiteUrl;
   final String email;
   final String copyright;
+  final String ourMissionTitle;
+  final String ourVisionTitle;
+  final String whyWeBuildVocarioTitle;
 
   const AboutData({
     required this.companyName,
@@ -23,6 +26,9 @@ class AboutData extends Equatable {
     required this.websiteUrl,
     required this.email,
     required this.copyright,
+    required this.ourMissionTitle,
+    required this.ourVisionTitle,
+    required this.whyWeBuildVocarioTitle,
   });
 
   @override
@@ -37,5 +43,8 @@ class AboutData extends Equatable {
         websiteUrl,
         email,
         copyright,
+        ourMissionTitle,
+        ourVisionTitle,
+        whyWeBuildVocarioTitle,
       ];
 }

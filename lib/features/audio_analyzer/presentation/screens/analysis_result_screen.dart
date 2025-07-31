@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/services/logger_service.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
@@ -30,6 +31,7 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final recordingAsync = ref.watch(recordingByIdProvider(widget.recordingId));
     final analysisAsync = ref.watch(audioAnalysisByRecordingIdProvider(widget.recordingId));
     final analyzerState = ref.watch(audioAnalyzerNotifierProvider);
@@ -37,7 +39,7 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
     ref.listen<AudioAnalyzerState>(audioAnalyzerNotifierProvider, (previous, next) {
       if (next == AudioAnalyzerState.error) {
         context.showSnackBar(
-          'Analysis failed. Please try again.',
+          localizations.analysisFailed,
           isError: true,
           onClick: () => context.hideSnackBar(),
         );
@@ -46,7 +48,7 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recording Details'),
+        title: Text(localizations.recordingDetails),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -56,7 +58,7 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
       body: recordingAsync.when(
         data: (recording) {
           if (recording == null) {
-            return const ErrorDisplayWidget(message: 'Recording not found');
+            return ErrorDisplayWidget(message: localizations.recordingNotFound);
           }
 
           return Column(
@@ -105,7 +107,7 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => ErrorDisplayWidget(message: 'Failed to load recording: $error'),
+        error: (error, stack) => ErrorDisplayWidget(message: localizations.failedToLoadRecording),
       ),
     );
   }
@@ -133,8 +135,9 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
       ref.read(reanalysisNotifierProvider.notifier).setReanalyzing(false);
       
       if (mounted) {
+        final localizations = AppLocalizations.of(context)!;
         context.showSnackBar(
-          'Reanalysis failed. Previous analysis restored.',
+          localizations.reanalysisFailed,
           isError: true,
         );
       }

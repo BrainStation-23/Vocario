@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 
 class AnalysisLoading extends StatelessWidget {
   const AnalysisLoading({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Column(
       children: [
         Container(
@@ -34,13 +37,13 @@ class AnalysisLoading extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'AI is processing your recording...',
+                localizations.aiProcessingMessage,
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
-                'This may take a few moments',
+                localizations.processingTimeMessage,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),

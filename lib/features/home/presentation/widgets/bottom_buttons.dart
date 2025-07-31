@@ -26,6 +26,7 @@ class BottomButtons extends ConsumerWidget {
   }
 
   Future<void> _importAudio(BuildContext context, WidgetRef ref) async {
+    final localizations = AppLocalizations.of(context)!;
     final recorderNotifier = ref.read(audioRecorderNotifierProvider.notifier);
     if (recorderNotifier.isRecordOrAnalyzeOngoing()) {
       return;
@@ -69,7 +70,7 @@ class BottomButtons extends ConsumerWidget {
           );
           if (context.mounted) {
             context.showSnackBar(
-              analysis.errorMessage ?? 'Analysis failed',
+              analysis.errorMessage ?? localizations.analysisFailed,
               isError: true,
             );
           }
@@ -80,7 +81,7 @@ class BottomButtons extends ConsumerWidget {
     } catch (e) {
       LoggerService.error('Error importing audio: $e');
       if (context.mounted) {
-        context.showSnackBar('Failed to import audio: $e', isError: true);
+        context.showSnackBar('${localizations.failedToImportAudio}: $e', isError: true);
       }
     } finally {
       recorderNotifier.setCompletedState();

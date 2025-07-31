@@ -1,3 +1,4 @@
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/constants/prompts.dart';
 
 enum AudioSummarizationContext {
@@ -10,29 +11,29 @@ enum AudioSummarizationContext {
 
   final String prompt;
 
-  String get displayName {
+  String displayName(AppLocalizations localizations) {
     switch (this) {
       case AudioSummarizationContext.doctorVisit:
-        return 'Doctor Consultation';
+        return localizations.doctorConsultation;
       case AudioSummarizationContext.meetingMinutes:
-        return 'Meeting Minutes';
+        return localizations.meetingMinutes;
       case AudioSummarizationContext.lectureSummary:
-        return 'Lecture Summary';
+        return localizations.lectureSummary;
       case AudioSummarizationContext.cookingInstructions:
-        return 'Cooking Instructions';
+        return localizations.cookingInstructions;
     }
   }
 
-  String get description {
+  String description(AppLocalizations localizations) {
     switch (this) {
       case AudioSummarizationContext.doctorVisit:
-        return 'Summarize medical consultations with structured clinical information';
+        return localizations.doctorConsultationDescription;
       case AudioSummarizationContext.meetingMinutes:
-        return 'Create professional meeting minutes with action items and decisions';
+        return localizations.meetingMinutesDescription;
       case AudioSummarizationContext.lectureSummary:
-        return 'Generate comprehensive study notes from educational content';
+        return localizations.lectureSummaryDescription;
       case AudioSummarizationContext.cookingInstructions:
-        return 'Convert cooking demonstrations into detailed recipes';
+        return localizations.cookingInstructionsDescription;
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/services/logger_service.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
@@ -23,15 +24,17 @@ class DeleteConfirmationDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return AlertDialog(
-      title: const Text('Delete Recording'),
-      content: const Text(
-        'Are you sure you want to delete this recording and its analysis? This action cannot be undone.',
+      title: Text(localizations.deleteRecording),
+      content: Text(
+        localizations.deleteConfirmationMessage,
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(localizations.cancel),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -42,7 +45,7 @@ class DeleteConfirmationDialog extends ConsumerWidget {
             backgroundColor: Theme.of(context).colorScheme.error,
             foregroundColor: Theme.of(context).colorScheme.onError,
           ),
-          child: const Text('Delete'),
+          child: Text(localizations.delete),
         ),
       ],
     );
@@ -62,13 +65,15 @@ class DeleteConfirmationDialog extends ConsumerWidget {
       ref.invalidate(allRecordingsProvider);
       
       if (context.mounted) {
-        context.showSnackBar('Recording and analysis deleted successfully');
+        final localizations = AppLocalizations.of(context)!;
+        context.showSnackBar(localizations.recordingDeletedSuccessfully);
         context.pop();
       }
     } catch (e) {
       LoggerService.error('Failed to delete recording and analysis', e);
       if (context.mounted) {
-        context.showSnackBar('Failed to delete: $e', isError: true);
+        final localizations = AppLocalizations.of(context)!;
+        context.showSnackBar(localizations.failedToDelete(e.toString()), isError: true);
       }
     }
   }

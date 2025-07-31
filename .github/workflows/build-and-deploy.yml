@@ -20,9 +20,7 @@ jobs:
 
       - name: Set Bundle Version Code
         # Increments the build number (bundleVersionCode) in pubspec.yaml.
-        # This uses 'yq' to update the version directly in pubspec.yaml.
-        # The new version will be 'current_version.build_number+RUN_NUMBER'.
-        # Example: if version is 1.0.0+1, it becomes 1.0.0+<GitHub_Run_Number>
+        # Uses 'yq' to update the version with the GitHub run number.
         run: |
           BUILD_NUMBER=${{ github.run_number }}
           CURRENT_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}')
@@ -33,34 +31,45 @@ jobs:
           cat pubspec.yaml
         shell: bash
 
-      - name: Decode Keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+      - name: Create Keystore File
+        # Decodes the base64-encoded keystore and places it at the path expected by build.gradle.kts.
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/@tanim2025__vocario-keystore.bak.jks
         shell: bash
 
-      - name: Create key.properties
+      - name: Create Credentials File for Gradle Signing
+        # Creates 'credentials.txt' in the android/ directory with the format expected by build.gradle.kts.
         run: |
-          echo "storeFile=upload-keystore.jks" > android/key.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "storePassword:${{ secrets.KEYSTORE_PASSWORD }}" > android/credentials.txt
+          echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/credentials.txt
+          echo "keyAlias:${{ secrets.KEY_ALIAS }}" >> android/credentials.txt
+          echo "storeFile:@tanim2025__vocario-keystore.bak.jks" >> android/credentials.txt
         shell: bash
+
+      - name: Create Firebase config files
+        # Places the google-services.json from secrets into the correct Android app directory.
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/src/google-services.json
 
       - name: Build Android App Bundle (AAB)
         run: flutter build appbundle --release
 
       - name: Sign App Bundle
+        # Signs the generated AAB using the keystore and credentials.
+        # The keystore path matches where it was created in the 'Create Keystore File' step.
         run: |
           jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
-          -keystore android/app/upload-keystore.jks \
+          -keystore android/@tanim2025__vocario-keystore.bak.jks \
           -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
           android/app/build/app/outputs/bundle/release/app-release.aab \
           ${{ secrets.KEY_ALIAS }}
         shell: bash
 
       - name: Upload to Play Store Internal Test Track
+        # Uses the r0adkll/upload-google-play action to upload the signed AAB.
         uses: r0adkll/upload-google-play@v1
         with:
           aabFile: android/app/build/app/outputs/bundle/release/app-release.aab
           serviceAccountJson: ${{ secrets.GOOGLE_SERVICES_JSON }}
           track: internal
           status: completed
+
+    

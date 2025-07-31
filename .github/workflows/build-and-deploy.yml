@@ -79,6 +79,6 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           aabFile: android/app/build/app/outputs/bundle/release/app-release.aab
-          serviceAccountJson: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          serviceAccountJson: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           track: internal
           status: completed

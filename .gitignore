@@ -74,6 +74,16 @@ coverage/
 .env.local
 .env.*.local
 
+# Keystore and credentials (never commit these!)
+credentials.txt
+@tanim2025__vocario-keystore.bak.jks
+
+# Firebase configuration (contains sensitive API keys)
+google-services.json
+GoogleService-Info.plist
+android/**/google-services.json
+ios/**/GoogleService-Info.plist
+
 # Logs
 logs
 *.log

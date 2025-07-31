@@ -70,7 +70,8 @@ jobs:
       - name: 📤 Upload to Play Store (Internal Track)
         uses: r0adkll/upload-google-play@v1
         with:
-          aabFile: build/app/outputs/bundle/release/app-release.aab
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
           serviceAccountJson: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          track: internal
+          track: beta
           status: completed
+          packageName: com.brainstation23.vocario

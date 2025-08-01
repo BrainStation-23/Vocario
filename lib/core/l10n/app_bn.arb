@@ -424,5 +424,17 @@
   "failedToAnalyzeMedia": "মিডিয়া বিশ্লেষণ করতে ব্যর্থ",
   "@failedToAnalyzeMedia": {
     "description": "Error message when media analysis fails"
+  },
+  "analysisInProgress": "বিশ্লেষণ চলমান",
+  "@analysisInProgress": {
+    "description": "Title for dialog when analysis is ongoing"
+  },
+  "analysisInProgressMessage": "অডিও বিশ্লেষণ বর্তমানে চলমান। আপনি এখন চলে গেলে, অগ্রগতি হারিয়ে যাবে এবং অপারেশন বাতিল হয়ে যাবে।",
+  "@analysisInProgressMessage": {
+    "description": "Message explaining that leaving will cancel ongoing analysis"
+  },
+  "leaveAnyway": "যাইহোক চলে যান",
+  "@leaveAnyway": {
+    "description": "Button text to confirm leaving despite ongoing analysis"
   }
 }

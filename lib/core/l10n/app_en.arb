@@ -425,5 +425,17 @@
   "failedToAnalyzeMedia": "Failed to analyze media",
   "@failedToAnalyzeMedia": {
     "description": "Error message when media analysis fails"
+  },
+  "analysisInProgress": "Analysis in Progress",
+  "@analysisInProgress": {
+    "description": "Title for dialog when analysis is ongoing"
+  },
+  "analysisInProgressMessage": "Audio analysis is currently in progress. If you leave now, the progress will be lost and the operation will be cancelled.",
+  "@analysisInProgressMessage": {
+    "description": "Message explaining that leaving will cancel ongoing analysis"
+  },
+  "leaveAnyway": "Leave Anyway",
+  "@leaveAnyway": {
+    "description": "Button text to confirm leaving despite ongoing analysis"
   }
 }

@@ -667,6 +667,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to analyze media'**
   String get failedToAnalyzeMedia;
+
+  /// Title for dialog when analysis is ongoing
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis in Progress'**
+  String get analysisInProgress;
+
+  /// Message explaining that leaving will cancel ongoing analysis
+  ///
+  /// In en, this message translates to:
+  /// **'Audio analysis is currently in progress. If you leave now, the progress will be lost and the operation will be cancelled.'**
+  String get analysisInProgressMessage;
+
+  /// Button text to confirm leaving despite ongoing analysis
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Anyway'**
+  String get leaveAnyway;
 }
 
 class _AppLocalizationsDelegate

@@ -322,4 +322,14 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get failedToAnalyzeMedia => 'মিডিয়া বিশ্লেষণ করতে ব্যর্থ';
+
+  @override
+  String get analysisInProgress => 'বিশ্লেষণ চলমান';
+
+  @override
+  String get analysisInProgressMessage =>
+      'অডিও বিশ্লেষণ বর্তমানে চলমান। আপনি এখন চলে গেলে, অগ্রগতি হারিয়ে যাবে এবং অপারেশন বাতিল হয়ে যাবে।';
+
+  @override
+  String get leaveAnyway => 'যাইহোক চলে যান';
 }

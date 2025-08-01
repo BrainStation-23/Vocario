@@ -323,4 +323,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToAnalyzeMedia => 'Failed to analyze media';
+
+  @override
+  String get analysisInProgress => 'Analysis in Progress';
+
+  @override
+  String get analysisInProgressMessage =>
+      'Audio analysis is currently in progress. If you leave now, the progress will be lost and the operation will be cancelled.';
+
+  @override
+  String get leaveAnyway => 'Leave Anyway';
 }

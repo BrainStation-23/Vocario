@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/services/logger_service.dart';
+import 'package:vocario/core/services/network_service/gemini_api_service.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/audio_analyzer_provider.dart';
@@ -28,6 +29,7 @@ class AnalysisResultScreen extends ConsumerStatefulWidget {
 
 class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
   AudioAnalysis? _previousAnalysis;
+  final GeminiApiService _geminiApiService = GeminiApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +48,21 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.recordingDetails),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleBackNavigation(context, analyzerState);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(localizations.recordingDetails),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => _handleBackNavigation(context, analyzerState),
+          ),
         ),
-      ),
       body: recordingAsync.when(
         data: (recording) {
           if (recording == null) {
@@ -109,6 +117,7 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => ErrorDisplayWidget(message: localizations.failedToLoadRecording),
       ),
+      ),
     );
   }
 
@@ -145,6 +154,56 @@ class _SummaryDetailsScreenState extends ConsumerState<AnalysisResultScreen> {
       // Restore previous analysis if available
       if (_previousAnalysis != null) {
         ref.invalidate(audioAnalysisByRecordingIdProvider(widget.recordingId));
+      }
+    }
+  }
+
+  Future<void> _handleBackNavigation(
+    BuildContext context,
+    AudioAnalyzerState analyzerState,
+  ) async {
+    final localizations = AppLocalizations.of(context)!;
+    
+    if (analyzerState == AudioAnalyzerState.analyzing ||
+        ref.read(reanalysisNotifierProvider)) {
+      
+      final shouldLeave = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(localizations.analysisInProgress),
+            content: Text(localizations.analysisInProgressMessage),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(false),
+                child: Text(localizations.cancel),
+              ),
+              TextButton(
+                onPressed: () => context.pop(true),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: Text(localizations.leaveAnyway),
+              ),
+            ],
+          );
+        },
+      );
+      
+      if (shouldLeave == true) {
+        _geminiApiService.cancelOperations();
+        
+        ref.read(audioAnalyzerNotifierProvider.notifier).reset();
+        ref.read(reanalysisNotifierProvider.notifier).setReanalyzing(false);
+        
+        if (context.mounted) {
+          context.pop();
+        }
+      }
+    } else {
+      if (context.mounted) {
+        context.pop();
       }
     }
   }

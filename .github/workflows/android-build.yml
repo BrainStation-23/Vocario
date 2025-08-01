@@ -1,109 +1,76 @@
-name: Build Android APK and AAB
+name: 🚀 Build and Upload Android AAB
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_upload:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-        
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.6'
-        channel: 'stable'
-        cache: true
-        
-    - name: Create keystore file
-      run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
-        
-    - name: Create credentials file
-      run: |
-        echo "storePassword:${{ secrets.KEYSTORE_PASSWORD }}" > android/credentials.txt
-        echo "keyPassword:${{ secrets.KEY_PASSWORD }}" >> android/credentials.txt
-        echo "keyAlias:${{ secrets.KEY_ALIAS }}" >> android/credentials.txt
-        echo "storeFile:keystore.jks" >> android/credentials.txt
-        
-    - name: Create Firebase config files
-      run: |
-        # Create google-services.json from secrets
-        echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/src/google-services.json
-        
-    - name: Set version info
-      run: |
-        # Extract current version from pubspec.yaml
-        CURRENT_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | sed 's/+.*//')
-        
-        # Generate version code using GitHub run number
-        VERSION_CODE=${{ github.run_number }}
-        
-        # Create version name by combining current version with version code
-        VERSION_NAME="${CURRENT_VERSION}+${VERSION_CODE}"
-        
-        # Get commit SHA (first 7 characters)
-        COMMIT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-        
-        # Set environment variables
-        echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
-        echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_ENV
-        echo "COMMIT_SHA=${COMMIT_SHA}" >> $GITHUB_ENV
-        
-        # Update pubspec.yaml with new version
-        sed -i "s/^version:.*/version: ${VERSION_NAME}/" pubspec.yaml
-        
-        echo "Version Name: ${VERSION_NAME}"
-        echo "Version Code: ${VERSION_CODE}"
-        echo "Commit SHA: ${COMMIT_SHA}"
-        
-    - name: Get dependencies
-      run: flutter pub get
-      
-    - name: Run build runner
-      run: dart run build_runner build --delete-conflicting-outputs
-      
-    # - name: Run tests
-      # run: flutter test
-      
-    - name: Build AAB (Release)
-      run: |
-        echo "Building AAB with version: ${{ env.VERSION_NAME }} (code: ${{ env.VERSION_CODE }})"
-        flutter build appbundle --release --build-name="${{ env.VERSION_NAME }}" --build-number="${{ env.VERSION_CODE }}"
-      
-    - name: Upload AAB artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: vocario-aab-v${{ env.VERSION_NAME }}-${{ env.COMMIT_SHA }}
-        path: |
-          build/app/outputs/bundle/**/*.aab
-        retention-days: 30
-        
-    - name: Deploy to Google Play Store (Internal Testing)
-      uses: r0adkll/upload-google-play@v1
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-        packageName: com.brainstation23.vocario
-        releaseFiles: build/app/outputs/bundle/release/app-release.aab
-        track: internal
-        status: completed
-        inAppUpdatePriority: 2
-        userFraction: 1.0
-        whatsNewDirectory: metadata/whatsnew
-        mappingFile: build/app/outputs/mapping/release/mapping.txt
-        
-    - name: Clean up sensitive files
-      if: always()
-      run: |
-        rm -f android/keystore.jks
-        rm -f android/credentials.txt
-        rm -f android/app/src/google-services.json
+      - name: 🛎️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: 'stable'
+          cache: true
+
+      - name: 🛠️ Install yq
+        run: |
+          YQ_VERSION="v4.44.3"
+          wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+        shell: bash
+
+      - name: 🔢 Set Bundle Version Code
+        run: |
+          BUILD_NUMBER=${{ github.run_number }}
+          CURRENT_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}')
+          BASE_VERSION=$(echo $CURRENT_VERSION | cut -d'+' -f1)
+          NEW_VERSION="$BASE_VERSION+$BUILD_NUMBER"
+          echo "Updating pubspec.yaml version from $CURRENT_VERSION to $NEW_VERSION"
+          yq e '.version = "'$NEW_VERSION'"' -i pubspec.yaml
+          cat pubspec.yaml
+        shell: bash
+
+      - name: 🔐 Create Keystore File
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
+        shell: bash
+
+      - name: 🔧 Create Firebase Config
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/src/google-services.json
+
+      - name: 📦 Get Dependencies
+        run: flutter pub get
+
+      - name: 🧹 Run Build Runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: 🧱 Build Android App Bundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: 🔏 Sign AAB with Keystore
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: android/app/build/app/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: 📤 Upload to Play Store (Internal Track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          aabFile: android/app/build/app/outputs/bundle/release/app-release.aab
+          serviceAccountJson: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          track: internal
+          status: completed

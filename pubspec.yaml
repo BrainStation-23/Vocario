@@ -2,7 +2,7 @@ name: vocario
 description: "AI Audio Summarizer"
 publish_to: 'none'
 
-version: 1.0.1+20250731
+version: 1.0.2+20250801
 
 environment:
   sdk: ^3.8.1

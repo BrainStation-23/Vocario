@@ -3,10 +3,9 @@ import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/services/storage_service.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
 import 'settings_card.dart';
-import 'custom_text_field.dart';
 import 'info_box.dart';
 
-class ApiKeySection extends StatelessWidget {
+class ApiKeySection extends StatefulWidget {
   final TextEditingController controller;
   final Function(String) onLaunchURL;
   final VoidCallback? onApiKeySaved;
@@ -17,6 +16,25 @@ class ApiKeySection extends StatelessWidget {
     required this.onLaunchURL,
     this.onApiKeySaved,
   });
+
+  @override
+  State<ApiKeySection> createState() => _ApiKeySectionState();
+}
+
+class _ApiKeySectionState extends State<ApiKeySection> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +51,29 @@ class ApiKeySection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CustomTextField(
-                  controller: controller,
-                  hintText: localizations.apiKeyHint,
-                  obscureText: true,
+                child: TextField(
+                   controller: widget.controller,
+                   focusNode: _focusNode,
+                   obscureText: true,
+                   textInputAction: TextInputAction.done,
+                   onSubmitted: (_) => _saveApiKey(context),
+                  decoration: InputDecoration(
+                    hintText: localizations.apiKeyHint,
+                    hintStyle: TextStyle(color: Colors.grey[400]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -52,7 +89,7 @@ class ApiKeySection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           GestureDetector(
-            onTap: () => onLaunchURL('https://aistudio.google.com/app/apikey'),
+            onTap: () => widget.onLaunchURL('https://aistudio.google.com/app/apikey'),
             child: Row(
               children: [
                 Icon(Icons.open_in_new, color: primaryColor, size: 16),
@@ -79,7 +116,10 @@ class ApiKeySection extends StatelessWidget {
 
   Future<void> _saveApiKey(BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;
-    final apiKey = controller.text.trim();
+    final apiKey = widget.controller.text.trim();
+    
+    // Remove focus and close keyboard
+     _focusNode.unfocus();
     
     if (apiKey.isEmpty) {
       context.showSnackBar(localizations.pleaseEnterApiKey, isError: true);
@@ -93,7 +133,7 @@ class ApiKeySection extends StatelessWidget {
         context.showSnackBar(localizations.apiKeySavedSuccessfully);
       }
       
-      onApiKeySaved?.call();
+      widget.onApiKeySaved?.call();
     } catch (e) {
       if (context.mounted) {
         context.showSnackBar(

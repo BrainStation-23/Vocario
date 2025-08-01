@@ -9,15 +9,19 @@ import 'package:vocario/core/services/logger_service.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:path/path.dart' as path;
+import 'package:vocario/features/audio_recorder/presentation/providers/audio_recorder_provider.dart';
 
 part 'import_video.g.dart';
 
 @riverpod
 ImportVideoUseCase importVideoUseCase(Ref ref) {
-  return ImportVideoUseCase();
+  return ImportVideoUseCase(ref);
 }
 
 class ImportVideoUseCase {
+  final Ref ref;
+
+  ImportVideoUseCase(this.ref);
 
   Future<AudioRecording?> call() async {
     try {
@@ -53,7 +57,9 @@ class ImportVideoUseCase {
         throw Exception('Unable to access video file path');
       }
 
+      ref.read(audioRecorderNotifierProvider.notifier).setExtractingAudioState();
       final audioFile = await _extractAudioFromVideo(videoFilePath, pickedFile.name);
+      ref.read(audioRecorderNotifierProvider.notifier).setIdleState();
       
       final recording = AudioRecording(
         id: AppUtils.filePathToID(audioFile.path),
@@ -68,6 +74,7 @@ class ImportVideoUseCase {
       return recording;
       
     } catch (e, stackTrace) {
+      ref.read(audioRecorderNotifierProvider.notifier).setIdleState();
       LoggerService.error('Error importing video file', e, stackTrace);
       rethrow;
     }

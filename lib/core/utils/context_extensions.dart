@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vocario/core/constants/app_constants.dart';
 import 'package:vocario/core/theme/app_colors.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 
 extension ContextExtensions on BuildContext {
   Future<void> launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri)) {
-      throw Exception('Could not launch $url');
+      final localizations = AppLocalizations.of(this)!;
+      throw Exception(localizations.couldNotLaunch(url));
     }
   }
 
@@ -24,7 +26,7 @@ extension ContextExtensions on BuildContext {
         ),
         action: onClick != null 
             ? SnackBarAction(
-                label: 'Dismiss',
+                label: AppLocalizations.of(this)!.dismiss,
                 textColor: isError
                     ? Theme.of(this).colorScheme.onError
                     : Colors.white,

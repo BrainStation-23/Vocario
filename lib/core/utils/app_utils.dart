@@ -10,6 +10,7 @@ import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 
 class AppUtils {
   // File size validation
@@ -117,29 +118,31 @@ class AppUtils {
 
   // Share audio file
   static Future<void> shareAudioFile(AudioRecording recording, BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
     try {
       final file = File(recording.filePath);
       if (await file.exists()) {
         final xFile = XFile(recording.filePath);
         await Share.shareXFiles(
           [xFile],
-          text: 'Audio recording from ${FormatUtils.formatDate(recording.createdAt)}',
+          text: localizations.audioRecordingFrom(FormatUtils.formatDate(recording.createdAt)),
         );
       } else {
         if (context.mounted) {
-          context.showSnackBar('Audio file not found', isError: true);
+          context.showSnackBar(localizations.audioFileNotFound, isError: true);
         }
       }
     } catch (e) {
       LoggerService.error('Failed to share audio file', e);
       if (context.mounted) {
-        context.showSnackBar('Failed to share audio file: $e', isError: true);
+        context.showSnackBar(localizations.failedToShareAudioFile(e.toString()), isError: true);
       }
     }
   }
 
   // Share analysis text
   static Future<void> shareAnalysisText(AsyncValue<AudioAnalysis?> analysisAsync, BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
     try {
       final analysis = analysisAsync.value;
       if (analysis != null && analysis.content.isNotEmpty) {
@@ -158,18 +161,18 @@ class AppUtils {
         
         await Share.share(
           textContent,
-          subject: 'Audio Analysis Results',
+          subject: localizations.audioAnalysisResults,
         );
       } else {
         if (context.mounted) {
-          context.showSnackBar('No analysis content available to share', isError: true);
+          context.showSnackBar(localizations.noAnalysisContentToShare, isError: true);
         }
       }
     } catch (e) {
       LoggerService.error('Failed to share analysis text', e);
       if (context.mounted) {
         context.showSnackBar(
-          'Failed to share analysis text: $e',
+          localizations.failedToShareAnalysisText(e.toString()),
           isError: true,
         );
       }

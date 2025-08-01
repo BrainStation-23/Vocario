@@ -43,6 +43,7 @@ ToggleRecordingUseCase toggleRecordingUseCase(Ref ref) {
 enum RecorderState {
   idle,
   recording,
+  extractingAudio,
   analyzing,
   completed,
   error,
@@ -217,8 +218,24 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
     );
   }
 
+  void setExtractingAudioState() {
+    state = state.copyWith(
+      state: RecorderState.extractingAudio,
+    );
+  }
+
+  void setIdleState() {
+    state = state.copyWith(
+      state: RecorderState.idle,
+      recording: null,
+      errorMessage: null,
+    );
+  }
+
   bool isRecordOrAnalyzeOngoing() {
-    return state.state == RecorderState.recording || state.state == RecorderState.analyzing;
+    return state.state == RecorderState.recording || 
+           state.state == RecorderState.analyzing || 
+           state.state == RecorderState.extractingAudio;
   }
 
   void _listenToRecordingUpdates() {

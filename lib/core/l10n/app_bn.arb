@@ -71,12 +71,370 @@
   "@apiKeyInfo": {
     "description": "API key information text"
   },
-  "importAudioFeatureComingSoon": "অডিও ইম্পোর্ট শীঘ্রই আসছে!",
-  "@importAudioFeatureComingSoon": {
-    "description": "Snackbar message for import audio"
+  "aboutUs": "আমাদের সম্পর্কে",
+  "@aboutUs": {
+    "description": "About screen title"
   },
-  "importVideoFeatureComingSoon": "ভিডিও ইম্পোর্ট শীঘ্রই আসছে!",
-  "@importVideoFeatureComingSoon": {
-    "description": "Snackbar message for import video"
+  "ourMission": "আমাদের লক্ষ্য",
+  "@ourMission": {
+    "description": "Mission section title"
+  },
+  "ourVision": "আমাদের দৃষ্টিভঙ্গি",
+  "@ourVision": {
+    "description": "Vision section title"
+  },
+  "whyWeBuildVocario": "কেন আমরা ভোকারিও তৈরি করেছি",
+  "@whyWeBuildVocario": {
+    "description": "App purpose section title"
+  },
+  "contactUs": "যোগাযোগ করুন",
+  "@contactUs": {
+    "description": "Contact section title"
+  },
+  "website": "ওয়েবসাইট",
+  "@website": {
+    "description": "Website contact label"
+  },
+  "email": "ইমেইল",
+  "@email": {
+    "description": "Email contact label"
+  },
+  "companyName": "ব্রেইন স্টেশন ২৩",
+  "@companyName": {
+    "description": "Company name"
+  },
+  "companyTagline": "শীর্ষস্থানীয় সফটওয়্যার ডেভেলপমেন্ট ও আইটি সেবা প্রদানকারী",
+  "@companyTagline": {
+    "description": "Company tagline"
+  },
+  "missionContent": "কম সম্পদ দিয়ে বেশি অর্জনে মানুষকে ক্ষমতায়নের মাধ্যমে ডিজিটাল নেতৃত্বের জন্য আপনার বিশ্বস্ত সহযোগী",
+  "@missionContent": {
+    "description": "Company mission statement"
+  },
+  "visionContent": "বিশ্বব্যাপী প্রতিভা নিয়োগের মাধ্যমে ইতিবাচক প্রভাব সৃষ্টি করে দ্রুততম ডিজিটাল রূপান্তর ও উদ্ভাবন অংশীদার হওয়া।",
+  "@visionContent": {
+    "description": "Company vision statement"
+  },
+  "appPurposeContent": "আমরা ভোকারিও তৈরি করেছি আমাদের দেশের সেবায় অবদান রাখার অঙ্গীকারের অংশ হিসেবে, যা মানুষকে ভয়েস প্রযুক্তির মাধ্যমে আরও কার্যকর ও দক্ষভাবে যোগাযোগ করতে সাহায্য করে।",
+  "@appPurposeContent": {
+    "description": "App purpose description"
+  },
+  "copyright": "© ২০২৫ ব্রেইন স্টেশন ২৩। সকল অধিকার সংরক্ষিত।",
+  "@copyright": {
+    "description": "Copyright notice"
+  },
+  "analyzing": "বিশ্লেষণ করা হচ্ছে...",
+  "@analyzing": {
+    "description": "Loading message during analysis"
+  },
+  "selectUsageContext": "ব্যবহারের প্রসঙ্গ নির্বাচন করুন",
+  "@selectUsageContext": {
+    "description": "Title for usage context selection"
+  },
+  "doctorConsultation": "ডাক্তারি পরামর্শ",
+  "@doctorConsultation": {
+    "description": "Doctor consultation context type"
+  },
+  "meetingMinutes": "মিটিং মিনিটস",
+  "@meetingMinutes": {
+    "description": "Meeting minutes context type"
+  },
+  "lectureSummary": "লেকচার সারসংক্ষেপ",
+  "@lectureSummary": {
+    "description": "Lecture summary context type"
+  },
+  "cookingInstructions": "রান্নার নির্দেশনা",
+  "@cookingInstructions": {
+    "description": "Cooking instructions context type"
+  },
+  "doctorConsultationDescription": "কাঠামোগত ক্লিনিকাল তথ্য সহ চিকিৎসা পরামর্শের সারসংক্ষেপ",
+  "@doctorConsultationDescription": {
+    "description": "Description for doctor consultation context"
+  },
+  "meetingMinutesDescription": "কর্মপরিকল্পনা ও সিদ্ধান্ত সহ কাঠামোগত মিটিং সারসংক্ষেপ তৈরি করুন",
+  "@meetingMinutesDescription": {
+    "description": "Description for meeting minutes context"
+  },
+  "lectureSummaryDescription": "মূল ধারণা ও শিক্ষণীয় বিষয় সহ শিক্ষামূলক সারসংক্ষেপ তৈরি করুন",
+  "@lectureSummaryDescription": {
+    "description": "Description for lecture summary context"
+  },
+  "cookingInstructionsDescription": "উপাদান ও কৌশল সহ ধাপে ধাপে রান্নার নির্দেশনা বের করুন",
+  "@cookingInstructionsDescription": {
+    "description": "Description for cooking instructions context"
+  },
+  "reanalysisFailed": "পুনঃবিশ্লেষণ ব্যর্থ হয়েছে",
+  "@reanalysisFailed": {
+    "description": "Error message when re-analysis fails"
+  },
+  "recordingDeletedSuccessfully": "রেকর্ডিং ও বিশ্লেষণ সফলভাবে মুছে ফেলা হয়েছে",
+  "@recordingDeletedSuccessfully": {
+    "description": "Success message when recording is deleted"
+  },
+  "failedToDelete": "মুছে ফেলতে ব্যর্থ: {error}",
+  "@failedToDelete": {
+    "description": "Error message when deletion fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "usageContextDescription": "সর্বোত্তম সারসংক্ষেপ ফলাফল পেতে আপনি যে ধরনের কন্টেন্ট রেকর্ড করছেন তা বেছে নিন।",
+  "@usageContextDescription": {
+    "description": "Description for usage context selection"
+  },
+  "cancel": "বাতিল",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "recordingMode": "রেকর্ডিং মোড",
+  "@recordingMode": {
+    "description": "Recording mode label"
+  },
+  "change": "পরিবর্তন",
+  "@change": {
+    "description": "Change button text"
+  },
+  "apiKeyRequired": "API কী প্রয়োজন",
+  "@apiKeyRequired": {
+    "description": "API key required dialog title"
+  },
+  "apiKeyDescription": "আপনার অডিও রেকর্ডিং বিশ্লেষণ করতে, ভোকারিওর একটি জেমিনি API কী প্রয়োজন। এই কীটি আপনার ডিভাইসে নিরাপদে সংরক্ষিত থাকে এবং শুধুমাত্র আপনার অডিও কন্টেন্ট প্রক্রিয়া করতে ব্যবহৃত হয়।",
+  "@apiKeyDescription": {
+    "description": "API key requirement description"
+  },
+  "apiKeySecurityInfo": "• আপনার API কী স্থানীয়ভাবে সংরক্ষিত এবং এনক্রিপ্ট করা\n• কোনো ডেটা তৃতীয় পক্ষের সাথে শেয়ার করা হয় না\n• আপনি আপনার API ব্যবহারের উপর সম্পূর্ণ নিয়ন্ত্রণ বজায় রাখেন",
+  "@apiKeySecurityInfo": {
+    "description": "API key security information"
+  },
+  "goToSettings": "সেটিংসে যান",
+  "@goToSettings": {
+    "description": "Go to settings button text"
+  },
+  "analysisResults": "বিশ্লেষণের ফলাফল",
+  "@analysisResults": {
+    "description": "Analysis results section title"
+  },
+  "shareOptions": "শেয়ার অপশন",
+  "@shareOptions": {
+    "description": "Share options dialog title"
+  },
+  "shareOptionsDescription": "আপনি কী শেয়ার করতে চান?",
+  "@shareOptionsDescription": {
+    "description": "Share options description"
+  },
+  "shareAudioFile": "অডিও ফাইল শেয়ার করুন",
+  "@shareAudioFile": {
+    "description": "Share audio file option"
+  },
+  "shareAnalysisText": "বিশ্লেষণ টেক্সট শেয়ার করুন",
+  "@shareAnalysisText": {
+    "description": "Share analysis text option"
+  },
+  "noAnalysisAvailable": "কোনো বিশ্লেষণ উপলব্ধ নেই",
+  "@noAnalysisAvailable": {
+    "description": "No analysis available message"
+  },
+  "startAnalysisMessage": "আপনার রেকর্ডিং থেকে অন্তর্দৃষ্টি পেতে বিশ্লেষণ শুরু করুন",
+  "@startAnalysisMessage": {
+    "description": "Start analysis message"
+  },
+  "duration": "সময়কাল",
+  "@duration": {
+    "description": "Duration label"
+  },
+  "created": "তৈরি",
+  "@created": {
+    "description": "Created date label"
+  },
+  "audioPlayer": "অডিও প্লেয়ার",
+  "@audioPlayer": {
+    "description": "Audio player section title"
+  },
+  "recordingDetails": "রেকর্ডিং বিবরণ",
+  "@recordingDetails": {
+    "description": "Recording details section title"
+  },
+  "recordingNotFound": "রেকর্ডিং পাওয়া যায়নি",
+  "@recordingNotFound": {
+    "description": "Recording not found error message"
+  },
+  "failedToLoadRecording": "রেকর্ডিং লোড করতে ব্যর্থ",
+  "@failedToLoadRecording": {
+    "description": "Failed to load recording error message"
+  },
+  "reanalysisFailed": "পুনঃবিশ্লেষণ ব্যর্থ। পূর্ববর্তী বিশ্লেষণ পুনরুদ্ধার করা হয়েছে।",
+  "@reanalysisFailed": {
+    "description": "Reanalysis failed error message"
+  },
+  "recordingInformation": "রেকর্ডিং তথ্য",
+  "@recordingInformation": {
+    "description": "Recording information section title"
+  },
+  "fileName": "ফাইলের নাম",
+  "@fileName": {
+    "description": "File name label"
+  },
+  "fileSize": "ফাইলের আকার",
+  "@fileSize": {
+    "description": "File size label"
+  },
+  "reanalyze": "পুনঃবিশ্লেষণ",
+  "@reanalyze": {
+    "description": "Reanalyze button text"
+  },
+  "share": "শেয়ার",
+  "@share": {
+    "description": "Share button text"
+  },
+  "delete": "মুছুন",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "analysisComplete": "বিশ্লেষণ সম্পূর্ণ",
+  "@analysisComplete": {
+    "description": "Analysis complete message"
+  },
+  "aiProcessingMessage": "AI আপনার রেকর্ডিং প্রক্রিয়া করছে...",
+  "@aiProcessingMessage": {
+    "description": "AI processing message"
+  },
+  "processingTimeMessage": "এটি কয়েক মুহূর্ত সময় নিতে পারে",
+  "@processingTimeMessage": {
+    "description": "Processing time message"
+  },
+  "noRecordingsYet": "এখনো কোনো রেকর্ডিং নেই",
+  "@noRecordingsYet": {
+    "description": "No recordings yet message"
+  },
+  "startRecordingMessage": "এখানে আপনার সারসংক্ষেপ দেখতে রেকর্ডিং শুরু করুন",
+  "@startRecordingMessage": {
+    "description": "Start recording message"
+  },
+  "failedToLoadRecordings": "রেকর্ডিং লোড করতে ব্যর্থ",
+  "@failedToLoadRecordings": {
+    "description": "Failed to load recordings error message"
+  },
+  "deleteRecording": "রেকর্ডিং মুছুন",
+  "@deleteRecording": {
+    "description": "Delete recording dialog title"
+  },
+  "deleteConfirmationMessage": "আপনি কি নিশ্চিত যে আপনি এই রেকর্ডিং এবং এর বিশ্লেষণ মুছতে চান? এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "@deleteConfirmationMessage": {
+    "description": "Delete confirmation message"
+  },
+  "recordingDeletedSuccessfully": "রেকর্ডিং এবং বিশ্লেষণ সফলভাবে মুছে ফেলা হয়েছে",
+  "@recordingDeletedSuccessfully": {
+    "description": "Recording deleted successfully message"
+  },
+  "audioFileNotFound": "অডিও ফাইল পাওয়া যায়নি",
+  "@audioFileNotFound": {
+    "description": "Error message when audio file is not found"
+  },
+  "failedToShareAudioFile": "অডিও ফাইল শেয়ার করতে ব্যর্থ: {error}",
+  "@failedToShareAudioFile": {
+    "description": "Error message when sharing audio file fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "noAnalysisContentToShare": "শেয়ার করার জন্য কোন বিশ্লেষণ বিষয়বস্তু উপলব্ধ নেই",
+  "@noAnalysisContentToShare": {
+    "description": "Error message when no analysis content is available to share"
+  },
+  "failedToShareAnalysisText": "বিশ্লেষণ টেক্সট শেয়ার করতে ব্যর্থ: {error}",
+  "@failedToShareAnalysisText": {
+    "description": "Error message when sharing analysis text fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
+  },
+  "audioAnalysisResults": "অডিও বিশ্লেষণ ফলাফল",
+  "@audioAnalysisResults": {
+    "description": "Subject for sharing audio analysis results"
+  },
+  "dismiss": "বাতিল",
+  "@dismiss": {
+    "description": "Dismiss button text"
+  },
+  "audioRecordingFrom": "{date} থেকে অডিও রেকর্ডিং",
+  "@audioRecordingFrom": {
+    "description": "Text for sharing audio recording with date",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "The formatted date"
+      }
+    }
+  },
+  "couldNotLaunch": "{url} চালু করা যায়নি",
+  "@couldNotLaunch": {
+    "description": "Error message when URL cannot be launched",
+    "placeholders": {
+      "url": {
+        "type": "String",
+        "description": "The URL that could not be launched"
+      }
+    }
+  },
+  "pleaseEnterApiKey": "অনুগ্রহ করে একটি API কী প্রবেশ করান",
+  "@pleaseEnterApiKey": {
+    "description": "Error message when API key field is empty"
+  },
+  "apiKeySavedSuccessfully": "API কী সফলভাবে সংরক্ষিত হয়েছে",
+  "@apiKeySavedSuccessfully": {
+    "description": "Success message when API key is saved"
+  },
+  "failedToSaveApiKey": "API কী সংরক্ষণ করতে ব্যর্থ",
+  "@failedToSaveApiKey": {
+    "description": "Error message when API key save fails"
+  },
+  "tipMessage": "টিপ: সর্বোত্তম ফলাফলের জন্য, স্পষ্ট অডিও গুণমান এবং ন্যূনতম পটভূমির শব্দ নিশ্চিত করুন।",
+  "@tipMessage": {
+    "description": "Tip message for audio quality"
+  },
+  "summaries": "সারসংক্ষেপ",
+  "@summaries": {
+    "description": "Menu item for summaries"
+  },
+  "settings": "সেটিংস",
+  "@settings": {
+    "description": "Menu item for settings"
+  },
+  "aboutUs": "আমাদের সম্পর্কে",
+  "@aboutUs": {
+    "description": "Menu item for about us"
+  },
+  "analysisFailed": "বিশ্লেষণ ব্যর্থ",
+  "@analysisFailed": {
+    "description": "Error message when audio analysis fails"
+  },
+  "failedToImportMedia": "মিডিয়া ইম্পোর্ট করতে ব্যর্থ",
+  "@failedToImportMedia": {
+    "description": "Error message when media import fails"
+  },
+  "failedToAnalyzeMedia": "মিডিয়া বিশ্লেষণ করতে ব্যর্থ",
+  "@failedToAnalyzeMedia": {
+    "description": "Error message when media analysis fails"
+  },
+  "analysisInProgress": "বিশ্লেষণ চলমান",
+  "@analysisInProgress": {
+    "description": "Title for dialog when analysis is ongoing"
+  },
+  "analysisInProgressMessage": "অডিও বিশ্লেষণ বর্তমানে চলমান। আপনি এখন চলে গেলে, অগ্রগতি হারিয়ে যাবে এবং অপারেশন বাতিল হয়ে যাবে।",
+  "@analysisInProgressMessage": {
+    "description": "Message explaining that leaving will cancel ongoing analysis"
+  },
+  "leaveAnyway": "যাইহোক চলে যান",
+  "@leaveAnyway": {
+    "description": "Button text to confirm leaving despite ongoing analysis"
   }
 }

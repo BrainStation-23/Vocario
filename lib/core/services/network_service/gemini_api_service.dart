@@ -103,8 +103,6 @@ class GeminiApiService {
     int numBytes,
     void Function(int sent, int total)? onSendProgress,
   ) async {
-    final fileBytes = await file.readAsBytes();
-    
     // Step 1: Initial resumable request
     final uploadResponse = await _dio.post(
       '/upload/v1beta/files',
@@ -141,13 +139,13 @@ class GeminiApiService {
       onSendProgress: onSendProgress,
       options: Options(
         headers: {
-          'Content-Length': numBytes.toString(),
           'Content-Type': mimeType,
           'X-Goog-Upload-Offset': '0',
           'X-Goog-Upload-Command': 'upload, finalize',
+          'Transfer-Encoding': 'chunked',
         },
       ),
-      data: fileBytes,
+      data: file.openRead(),
     );
 
     final fileInfo = uploadBytesResponse.data;

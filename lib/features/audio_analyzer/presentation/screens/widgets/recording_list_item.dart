@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/core/utils/format_utils.dart';
 
@@ -14,6 +15,8 @@ class RecordingListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -32,11 +35,11 @@ class RecordingListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Duration: ${FormatUtils.formatDuration(recording.duration)}',
+              '${localizations.duration}: ${FormatUtils.formatDuration(recording.duration)}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             Text(
-              'Created: ${FormatUtils.formatDate(recording.createdAt)}',
+              '${localizations.created}: ${FormatUtils.formatDate(recording.createdAt)}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],

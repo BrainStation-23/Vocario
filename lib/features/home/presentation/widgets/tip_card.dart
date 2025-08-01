@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 
 class TipCard extends StatelessWidget {
   const TipCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -17,7 +20,7 @@ class TipCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Tip: For best results, ensure clear audio quality and minimal background noise.',
+                localizations.tipMessage,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),

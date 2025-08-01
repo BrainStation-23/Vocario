@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
 import 'package:vocario/features/audio_analyzer/presentation/screens/widgets/delete_confirmation_dialog.dart';
@@ -22,20 +23,22 @@ class ActionButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Row(
       children: [
         Expanded(
           child: OutlinedButton.icon(
             onPressed: ref.watch(reanalysisNotifierProvider) ? null : onReanalyze,
             icon: const Icon(Icons.refresh),
-            label: const Text('Reanalyze'),
+            label: Text(localizations.reanalyze),
           ),
         ),
         const SizedBox(width: 12),
         IconButton(
           onPressed: () => _showShareOptions(context, recording, analysisAsync),
           icon: const Icon(Icons.share),
-          tooltip: 'Share',
+          tooltip: localizations.share,
           style: IconButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -45,7 +48,7 @@ class ActionButtons extends ConsumerWidget {
         IconButton(
           onPressed: () => _showDeleteConfirmation(context, recording, analysisAsync),
           icon: const Icon(Icons.delete),
-          tooltip: 'Delete',
+          tooltip: localizations.delete,
           style: IconButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.error,
             foregroundColor: Theme.of(context).colorScheme.onError,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/theme/app_text_styles.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
 import 'package:vocario/features/audio_recorder/presentation/widgets/usage_context_selection_dialog.dart';
@@ -15,6 +16,7 @@ class UsageContextDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
 
     return Container(
@@ -40,7 +42,7 @@ class UsageContextDisplay extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Recording Mode',
+                localizations.recordingMode,
                 style: appTextStyles.bodyText.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12,
@@ -56,7 +58,7 @@ class UsageContextDisplay extends StatelessWidget {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  'Change',
+                  localizations.change,
                   style: appTextStyles.buttonText.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                     fontSize: 12,
@@ -67,7 +69,7 @@ class UsageContextDisplay extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            usageContext.displayName,
+            usageContext.displayName(localizations),
             style: appTextStyles.headlineText.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
@@ -76,7 +78,7 @@ class UsageContextDisplay extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            usageContext.description,
+            usageContext.description(localizations),
             style: appTextStyles.bodyText.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontSize: 12,

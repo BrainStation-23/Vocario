@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/theme/app_text_styles.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_summarization_context.dart';
@@ -13,6 +14,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final appColors = Theme.of(context).extension<AppColors>()!;
     final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
 
@@ -31,7 +33,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Select Usage Context',
+              localizations.selectUsageContext,
               style: appTextStyles.headlineText.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
@@ -39,7 +41,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Choose the type of content you\'re recording to get the best summarization results.',
+              localizations.usageContextDescription,
               style: appTextStyles.bodyText.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -51,6 +53,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
                 useCase,
                 appColors,
                 appTextStyles,
+                localizations,
               ),
             ),
             const SizedBox(height: 16),
@@ -60,7 +63,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Cancel',
+                    localizations.cancel,
                     style: appTextStyles.buttonText.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -79,6 +82,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
     AudioSummarizationContext useCase,
     AppColors appColors,
     AppTextStyles appTextStyles,
+    AppLocalizations localizations,
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -104,7 +108,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  useCase.displayName,
+                  useCase.displayName(localizations),
                   style: appTextStyles.headlineText.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
@@ -113,7 +117,7 @@ class UsageContextSelectionDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  useCase.description,
+                  useCase.description(localizations),
                   style: appTextStyles.bodyText.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 12,

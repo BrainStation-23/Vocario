@@ -25,8 +25,10 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
             state = ThemeMode.dark;
             break;
           default:
-            state = ThemeMode.system;
+            state = ThemeMode.light;
         }
+      } else {
+        state = ThemeMode.light;
       }
     } catch (e) {
       LoggerService.error('Failed to load theme mode', e);

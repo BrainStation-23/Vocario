@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/core/utils/format_utils.dart';
@@ -118,6 +119,7 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final appColors = Theme.of(context).extension<AppColors>()!;
     final recorderState = ref.watch(audioRecorderNotifierProvider);
     final isRecording = recorderState.state == RecorderState.recording;
@@ -128,7 +130,7 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
       if (previous?.state != RecorderState.error && 
           next.state == RecorderState.error) {
             context.showSnackBar(
-              next.errorMessage ?? 'Analysis failed',
+              next.errorMessage ?? localizations.analysisFailed,
               isError: true,
               onClick: () {
                 context.hideSnackBar();
@@ -233,7 +235,7 @@ class _AnimatedRecordingButtonState extends ConsumerState<AnimatedRecordingButto
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Analyzing...',
+                      localizations.analyzing,
                       style: TextStyle(
                         color: Colors.orange.shade700,
                         fontSize: 18,

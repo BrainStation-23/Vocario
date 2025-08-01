@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/core/routing/app_router.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 
 class MenuButton extends StatelessWidget {
   const MenuButton({super.key});
@@ -9,6 +10,7 @@ class MenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).extension<AppColors>()!;
+    final localizations = AppLocalizations.of(context)!;
     
     return Positioned(
       top: 40,
@@ -46,27 +48,27 @@ class MenuButton extends StatelessWidget {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'summaries',
             child: ListTile(
-              leading: Icon(Icons.summarize),
-              title: Text('Summaries'),
+              leading: const Icon(Icons.summarize),
+              title: Text(localizations.summaries),
               contentPadding: EdgeInsets.zero,
             ),
           ),
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'settings',
             child: ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              leading: const Icon(Icons.settings),
+              title: Text(localizations.settings),
               contentPadding: EdgeInsets.zero,
             ),
           ),
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'about',
             child: ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About Us'),
+              leading: const Icon(Icons.info),
+              title: Text(localizations.aboutUs),
               contentPadding: EdgeInsets.zero,
             ),
           ),

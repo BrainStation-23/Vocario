@@ -4,6 +4,7 @@ import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
 import 'package:vocario/core/services/storage_service.dart';
 import 'package:vocario/features/settings/presentation/widgets/settings_widgets.dart';
+import 'package:vocario/features/settings/presentation/widgets/version_section.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -54,8 +55,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   const AppearanceSection(),
                   const SizedBox(height: 16),
-                  // const LanguageSection(),
-                  // const SizedBox(height: 16),
+                  const LanguageSection(),
+                  const SizedBox(height: 16),
                   ApiKeySection(
                     controller: _apiKeyController,
                     onLaunchURL: context.launchURL,
@@ -63,6 +64,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       // No op
                     },
                   ),
+                  const SizedBox(height: 16),
+                  const VersionSection(),
                   const SizedBox(height: 16),
                   // EmailSection(controller: _emailController),
                   const SizedBox(height: 32),

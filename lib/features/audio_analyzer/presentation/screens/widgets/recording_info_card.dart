@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 
@@ -12,6 +13,8 @@ class RecordingInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -26,29 +29,29 @@ class RecordingInfoCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Recording Information',
+                  localizations.recordingInformation,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             _InfoRow(
-              label: 'File Name',
+              label: localizations.fileName,
               value: FormatUtils.getFileName(recording.filePath),
             ),
             const SizedBox(height: 8),
             _InfoRow(
-              label: 'Duration',
+              label: localizations.duration,
               value: FormatUtils.formatDuration(recording.duration),
             ),
             const SizedBox(height: 8),
             _InfoRow(
-              label: 'File Size',
+              label: localizations.fileSize,
               value: FormatUtils.formatFileSize(recording.fileSizeBytes),
             ),
             const SizedBox(height: 8),
             _InfoRow(
-              label: 'Created',
+              label: localizations.created,
               value: FormatUtils.formatDate(recording.createdAt),
             ),
           ],

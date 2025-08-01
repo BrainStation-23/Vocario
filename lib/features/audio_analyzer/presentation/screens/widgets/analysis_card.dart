@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/audio_analyzer_provider.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
@@ -23,6 +24,8 @@ class AnalysisCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -37,7 +40,7 @@ class AnalysisCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Analysis Results',
+                  localizations.analysisResults,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
@@ -53,7 +56,7 @@ class AnalysisCard extends ConsumerWidget {
                         return const AnalysisLoading();
                       } else if (analyzerState == AudioAnalyzerState.error) {
                         return AnalysisError(
-                          errorMessage: 'Analysis failed',
+                          errorMessage: localizations.analysisFailed,
                           recording: recording,
                         );
                       } else {

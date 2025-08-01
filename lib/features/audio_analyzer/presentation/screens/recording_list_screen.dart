@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/audio_analyzer/presentation/screens/widgets/recording_list_item.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
 
@@ -9,11 +10,12 @@ class RecordingListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
     final recordingsAsync = ref.watch(allRecordingsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Summaries'),
+        title: Text(localizations.summaries),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -34,14 +36,14 @@ class RecordingListScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No recordings yet',
+                    localizations.noRecordingsYet,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start recording to see your summaries here',
+                    localizations.startRecordingMessage,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
@@ -77,7 +79,7 @@ class RecordingListScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Failed to load recordings',
+                localizations.failedToLoadRecordings,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 ),

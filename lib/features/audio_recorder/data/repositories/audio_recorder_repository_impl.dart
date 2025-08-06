@@ -16,7 +16,6 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   final StreamController<int> _fileSizeController = StreamController<int>.broadcast();
   Duration _currentDuration = Duration.zero;
   String? _currentFilePath;
-  static const int maxFileSizeBytes = 20 * 1024 * 1024; // 20MB
   bool _isInitialized = false;
   bool _isRecording = false;
 
@@ -169,11 +168,6 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
           if (await file.exists()) {
             final fileSize = await file.length();
             _fileSizeController.add(fileSize);
-            
-            if (fileSize >= maxFileSizeBytes) {
-              LoggerService.info('Max file size reached, stopping recording');
-              await stopRecording();
-            }
           }
         } catch (e) {
           LoggerService.error('Failed to check file size', e);
@@ -197,8 +191,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
       
       final recordingFiles = audioDir
           .listSync()
-          .where((entity) => entity is File)
-          .cast<File>()
+          .whereType<File>()
           .toList();
       
       final recordings = <AudioRecording>[];
@@ -243,7 +236,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   Future<AudioRecording?> getRecordingById(String id) async {
     try {
       final audioDir = await AppUtils.getAudioDirectory();
-      final files = audioDir.listSync().where((entity) => entity is File).cast<File>();
+      final files = audioDir.listSync().whereType<File>();
       
       for (final file in files) {
         final fileId = AppUtils.filePathToID(file.path);
@@ -283,7 +276,7 @@ class AudioRecorderRepositoryImpl implements AudioRecorderRepository {
   Future<void> deleteRecording(String id) async {
     try {
       final audioDir = await AppUtils.getAudioDirectory();
-      final files = audioDir.listSync().where((entity) => entity is File).cast<File>();
+      final files = audioDir.listSync().whereType<File>();
       
       for (final file in files) {
         final fileId = AppUtils.filePathToID(file.path);

@@ -15,8 +15,9 @@ import 'package:vocario/core/l10n/app_localizations.dart';
 class AppUtils {
   // File size validation
   static bool isFileSizeValid(int fileSizeBytes) {
-    final fileSizeMB = fileSizeBytes / (1024 * 1024);
-    return fileSizeMB <= AppConstants.maxFileSizeMB;
+    //final fileSizeMB = fileSizeBytes / (1024 * 1024);
+    //return fileSizeMB <= AppConstants.maxFileSizeMB;
+    return true;
   }
 
   // Audio format validation

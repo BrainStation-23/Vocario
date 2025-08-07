@@ -22,6 +22,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importVideo => 'Import Video';
 
   @override
+  String get importMedia => 'Import Media';
+
+  @override
   String get settings => 'Settings';
 
   @override

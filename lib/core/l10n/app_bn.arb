@@ -15,6 +15,10 @@
   "@importVideo": {
     "description": "Import video button text"
   },
+  "importMedia": "মিডিয়া ইম্পোর্ট",
+  "@importMedia": {
+    "description": "Import media button text"
+  },
   "settings": "সেটিংস",
   "@settings": {
     "description": "Settings screen title"

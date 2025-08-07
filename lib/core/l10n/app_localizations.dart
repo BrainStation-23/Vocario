@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Import Video'**
   String get importVideo;
 
+  /// Import media button text
+  ///
+  /// In en, this message translates to:
+  /// **'Import Media'**
+  String get importMedia;
+
   /// Menu item for settings
   ///
   /// In en, this message translates to:

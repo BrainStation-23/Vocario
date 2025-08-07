@@ -19,6 +19,10 @@
   "@importMedia": {
     "description": "Import media button text"
   },
+  "record": "রেকর্ড",
+  "@record": {
+    "description": "Record button text for navigation"
+  },
   "settings": "সেটিংস",
   "@settings": {
     "description": "Settings screen title"

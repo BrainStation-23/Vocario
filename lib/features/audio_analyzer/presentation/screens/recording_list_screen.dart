@@ -14,92 +14,103 @@ class RecordingListScreen extends ConsumerWidget {
     final recordingsAsync = ref.watch(allRecordingsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.summaries),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: recordingsAsync.when(
-        data: (recordings) {
-          if (recordings.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
                 children: [
                   Icon(
-                    Icons.mic_none,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    Icons.summarize,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 28,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(width: 12),
                   Text(
-                    localizations.noRecordingsYet,
+                    localizations.summaries,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    localizations.startRecordingMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
-            );
-          }
+            ),
+            // Content
+            Expanded(
+              child: recordingsAsync.when(
+                data: (recordings) {
+                  if (recordings.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.summarize_outlined,
+                            size: 64,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            localizations.noRecordingsYet,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            localizations.startRecordingMessage,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: recordings.length,
-            itemBuilder: (context, index) {
-              final recording = recordings[index];
-              return RecordingListItem(
-                recording: recording,
-                onTap: () => _navigateToDetails(context, recording.id),
-              );
-            },
-          );
-        },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                localizations.failedToLoadRecordings,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: recordings.length,
+                    itemBuilder: (context, index) {
+                      final recording = recordings[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: RecordingListItem(
+                          recording: recording,
+                          onTap: () => context.push('/summaries/${recording.id}'),
+                        ),
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        localizations.failedToLoadRecordings,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                error.toString(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  void _navigateToDetails(BuildContext context, String recordingId) {
-    context.push('/summaries/$recordingId');
   }
 }

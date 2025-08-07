@@ -25,6 +25,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importMedia => 'Import Media';
 
   @override
+  String get record => 'Record';
+
+  @override
   String get settings => 'Settings';
 
   @override

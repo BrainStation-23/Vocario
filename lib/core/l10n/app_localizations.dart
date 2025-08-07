@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Import Media'**
   String get importMedia;
 
+  /// Record button text for navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get record;
+
   /// Menu item for settings
   ///
   /// In en, this message translates to:

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:vocario/features/home/presentation/home_screen.dart';
+import 'package:vocario/features/home/presentation/main_screen.dart';
 import 'package:vocario/features/settings/presentation/settings_screen.dart';
 import 'package:vocario/features/about/presentation/about_screen.dart';
-import 'package:vocario/features/audio_analyzer/presentation/screens/recording_list_screen.dart';
 import 'package:vocario/features/audio_analyzer/presentation/screens/analysis_result_screen.dart';
 
 class AppRouter {
   static const String home = '/';
   static const String settings = '/settings';
   static const String about = '/about';
-  static const String summaries = '/summaries';
   static const String summaryDetails = '/summaries/:id';
 
   static final GoRouter router = GoRouter(
@@ -19,22 +17,15 @@ class AppRouter {
       GoRoute(
         path: home,
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const MainScreen(),
       ),
       GoRoute(
-        path: summaries,
-        name: 'summaries',
-        builder: (context, state) => const RecordingListScreen(),
-        routes: [
-          GoRoute(
-            path: ':id',
-            name: 'summaryDetails',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return AnalysisResultScreen(recordingId: id);
-            },
-          ),
-        ],
+        path: summaryDetails,
+        name: 'summaryDetails',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AnalysisResultScreen(recordingId: id);
+        },
       ),
       GoRoute(
         path: settings,

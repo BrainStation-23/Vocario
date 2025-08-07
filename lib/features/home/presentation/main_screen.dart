@@ -5,6 +5,7 @@ import 'package:vocario/core/theme/app_colors.dart';
 import 'package:vocario/features/home/presentation/home_screen.dart';
 import 'package:vocario/features/settings/presentation/settings_screen.dart';
 import 'package:vocario/features/audio_analyzer/presentation/screens/recording_list_screen.dart';
+import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -93,6 +94,11 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         setState(() {
           _currentIndex = index;
         });
+        
+        // Refresh recordings when summaries tab is selected
+        if (index == 1) {
+          ref.read(recordingsNotifierProvider.notifier).refreshRecordings();
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -137,6 +143,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         setState(() {
           _currentIndex = 0;
         });
+        
+        // Refresh recordings when navigating to recording screen
+        ref.read(recordingsNotifierProvider.notifier).refreshRecordings();
       },
       child: Container(
         width: 80,

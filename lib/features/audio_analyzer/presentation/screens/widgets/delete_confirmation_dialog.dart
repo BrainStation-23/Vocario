@@ -62,7 +62,7 @@ class DeleteConfirmationDialog extends ConsumerWidget {
       
       ref.invalidate(recordingByIdProvider(recordingId));
       ref.invalidate(audioAnalysisByRecordingIdProvider(recordingId));
-      ref.invalidate(allRecordingsProvider);
+      ref.invalidate(recordingsNotifierProvider);
       
       if (context.mounted) {
         final localizations = AppLocalizations.of(context)!;

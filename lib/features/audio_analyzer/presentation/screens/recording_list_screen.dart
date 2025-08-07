@@ -5,13 +5,27 @@ import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/features/audio_analyzer/presentation/screens/widgets/recording_list_item.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
 
-class RecordingListScreen extends ConsumerWidget {
+class RecordingListScreen extends ConsumerStatefulWidget {
   const RecordingListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RecordingListScreen> createState() => _RecordingListScreenState();
+}
+
+class _RecordingListScreenState extends ConsumerState<RecordingListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh recordings when the screen is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(recordingsNotifierProvider.notifier).refreshRecordings();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final recordingsAsync = ref.watch(allRecordingsProvider);
+    final recordingsAsync = ref.watch(recordingsNotifierProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -33,6 +47,15 @@ class RecordingListScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
+                  ),
+                  const Spacer(),
+                  // Refresh button
+                  IconButton(
+                    onPressed: () {
+                      ref.read(recordingsNotifierProvider.notifier).refreshRecordings();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh',
                   ),
                 ],
               ),
@@ -102,6 +125,13 @@ class RecordingListScreen extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          ref.read(recordingsNotifierProvider.notifier).refreshRecordings();
+                        },
+                        child: const Text('Retry'),
                       ),
                     ],
                   ),

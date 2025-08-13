@@ -24,15 +24,35 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: 📦 Cache Flutter & Dart Packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.dartServer
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: 📦 Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: 🛠️ Install yq
         run: |
           YQ_VERSION="v4.44.3"
           wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
-        shell: bash
 
-      - name: 🔢 Set Bundle Version Code
+      - name: 🔢 Set Bundle Version Code & Create Files
         run: |
+          set -e
           BUILD_NUMBER=${{ github.run_number }}
           CURRENT_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}')
           BASE_VERSION=$(echo $CURRENT_VERSION | cut -d'+' -f1)
@@ -40,20 +60,16 @@ jobs:
           echo "Updating pubspec.yaml version from $CURRENT_VERSION to $NEW_VERSION"
           yq e '.version = "'$NEW_VERSION'"' -i pubspec.yaml
           cat pubspec.yaml
-        shell: bash
 
-      - name: 🔐 Create Keystore File
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
-        shell: bash
-
-      - name: 🔧 Create Firebase Config
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/src/google-services.json
+          # Create temporary keystore & firebase config
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > $HOME/keystore.jks
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/src/google-services.json
 
       - name: 📦 Get Dependencies
         run: flutter pub get
 
       - name: 🧹 Run Build Runner
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: flutter pub run build_runner build --delete-conflicting-outputs
 
       - name: 🧱 Build Android App Bundle (AAB)
         run: flutter build appbundle --release

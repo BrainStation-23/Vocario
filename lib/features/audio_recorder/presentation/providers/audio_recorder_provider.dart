@@ -259,13 +259,6 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
         state = state.copyWith(
           recording: state.recording!.copyWith(fileSizeBytes: fileSize),
         );
-        
-        // Auto-stop if file size reaches 20MB
-        const maxSizeBytes = 20 * 1024 * 1024; // 20MB
-        if (fileSize >= maxSizeBytes) {
-          LoggerService.info('File size limit reached (20MB), stopping recording automatically');
-          stopRecording();
-        }
       }
     });
   }

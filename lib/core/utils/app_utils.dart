@@ -13,13 +13,6 @@ import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.
 import 'package:vocario/core/l10n/app_localizations.dart';
 
 class AppUtils {
-  // File size validation
-  static bool isFileSizeValid(int fileSizeBytes) {
-    //final fileSizeMB = fileSizeBytes / (1024 * 1024);
-    //return fileSizeMB <= AppConstants.maxFileSizeMB;
-    return true;
-  }
-
   // Audio format validation
   static bool isAudioFormatSupported(String fileName) {
     final extension = getFileExtension(fileName).toLowerCase();
@@ -71,10 +64,7 @@ class AppUtils {
           mainAxisSize: MainAxisSize.min,
           children: [
             const CircularProgressIndicator(),
-            if (message != null) ...[
-              const SizedBox(height: 16),
-              Text(message),
-            ],
+            if (message != null) ...[const SizedBox(height: 16), Text(message)],
           ],
         ),
       ),
@@ -92,7 +82,10 @@ class AppUtils {
   }
 
   // Generate error message with parameters
-  static String generateErrorMessage(String template, Map<String, String> parameters) {
+  static String generateErrorMessage(
+    String template,
+    Map<String, String> parameters,
+  ) {
     String message = template;
     parameters.forEach((key, value) {
       message = message.replaceAll('{$key}', value);
@@ -112,13 +105,19 @@ class AppUtils {
 
   /// Converts a file path to an ID by removing the file extension and replacing spaces with underscores.
   static String filePathToID(String path) {
-     final fileName = path.split('/').last;
-     final fileNameWithoutExtension = fileName.replaceAll(RegExp(r'\.[^.]*$'), '');
-     return fileNameWithoutExtension.replaceAll(RegExp(r'\s+'), '_');
+    final fileName = path.split('/').last;
+    final fileNameWithoutExtension = fileName.replaceAll(
+      RegExp(r'\.[^.]*$'),
+      '',
+    );
+    return fileNameWithoutExtension.replaceAll(RegExp(r'\s+'), '_');
   }
 
   // Share audio file
-  static Future<void> shareAudioFile(AudioRecording recording, BuildContext context) async {
+  static Future<void> shareAudioFile(
+    AudioRecording recording,
+    BuildContext context,
+  ) async {
     final localizations = AppLocalizations.of(context)!;
     try {
       final file = File(recording.filePath);
@@ -126,7 +125,9 @@ class AppUtils {
         final xFile = XFile(recording.filePath);
         await Share.shareXFiles(
           [xFile],
-          text: localizations.audioRecordingFrom(FormatUtils.formatDate(recording.createdAt)),
+          text: localizations.audioRecordingFrom(
+            FormatUtils.formatDate(recording.createdAt),
+          ),
         );
       } else {
         if (context.mounted) {
@@ -136,37 +137,58 @@ class AppUtils {
     } catch (e) {
       LoggerService.error('Failed to share audio file', e);
       if (context.mounted) {
-        context.showSnackBar(localizations.failedToShareAudioFile(e.toString()), isError: true);
+        context.showSnackBar(
+          localizations.failedToShareAudioFile(e.toString()),
+          isError: true,
+        );
       }
     }
   }
 
   // Share analysis text
-  static Future<void> shareAnalysisText(AsyncValue<AudioAnalysis?> analysisAsync, BuildContext context) async {
+  static Future<void> shareAnalysisText(
+    AsyncValue<AudioAnalysis?> analysisAsync,
+    BuildContext context,
+  ) async {
     final localizations = AppLocalizations.of(context)!;
     try {
       final analysis = analysisAsync.value;
       if (analysis != null && analysis.content.isNotEmpty) {
         String textContent = analysis.content
-            .replaceAll(RegExp(r'^#{1,6}\s+'), '')
+            // Remove headings (# H1, ## H2...) anywhere
+            .replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '')
+            // Bold (**bold**)
             .replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1')
-            .replaceAll(RegExp(r'\*(.*?)\*'), r'$1')
-            .replaceAll(RegExp(r'_(.*?)_'), r'$1')
-            .replaceAll(RegExp(r'`(.*?)`'), r'$1')
+            // Italics with *italic* but not bold (**)
+            .replaceAll(RegExp(r'(?<!\*)\*(?!\*)(.*?)\*(?<!\*)'), r'$1')
+            // Italics with _italic_ (avoid matching URLs/emails)
+            .replaceAll(RegExp(r'(?<!\w)_(?!_)(.*?)_(?!\w)'), r'$1')
+            // Inline code `code`
+            .replaceAll(RegExp(r'`([^`]*)`'), r'$1')
+            // Links [text](url)
             .replaceAll(RegExp(r'\[(.*?)\]\(.*?\)'), r'$1')
+            // Bullet points
             .replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '')
+            // Numbered lists
             .replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '')
+            // Blockquotes >
             .replaceAll(RegExp(r'^\s*>\s+', multiLine: true), '')
+            // Normalize multiple newlines
             .replaceAll(RegExp(r'\n\s*\n'), '\n')
+            // Normalize multiple spaces
+            .replaceAll(RegExp(r'[ \t]+'), ' ')
             .trim();
-        
+
         await Share.share(
           textContent,
           subject: localizations.audioAnalysisResults,
         );
       } else {
         if (context.mounted) {
-          context.showSnackBar(localizations.noAnalysisContentToShare, isError: true);
+          context.showSnackBar(
+            localizations.noAnalysisContentToShare,
+            isError: true,
+          );
         }
       }
     } catch (e) {

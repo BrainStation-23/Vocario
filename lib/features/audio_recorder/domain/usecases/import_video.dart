@@ -41,11 +41,6 @@ class ImportVideoUseCase {
       final pickedFile = result.files.first;
       LoggerService.info('Video file selected: ${pickedFile.name}');
 
-      if (pickedFile.size > 0 && !AppUtils.isFileSizeValid(pickedFile.size)) {
-        LoggerService.warning('Video file size exceeds limit: ${pickedFile.size} bytes');
-        throw Exception('File size exceeds ${AppConstants.maxFileSizeMB}MB limit');
-      }
-
       if (!AppUtils.isVideoFormatSupported(pickedFile.name)) {
         LoggerService.warning('Unsupported video format: ${pickedFile.name}');
         throw Exception('Unsupported video format. Supported formats: ${AppConstants.supportedVideoFormats.join(", ")}');

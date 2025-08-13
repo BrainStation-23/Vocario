@@ -15,6 +15,14 @@
   "@importVideo": {
     "description": "Import video button text"
   },
+  "importMedia": "Import Media",
+  "@importMedia": {
+    "description": "Import media button text"
+  },
+  "record": "Record",
+  "@record": {
+    "description": "Record button text for navigation"
+  },
   "settings": "Settings",
   "@settings": {
     "description": "Settings screen title"

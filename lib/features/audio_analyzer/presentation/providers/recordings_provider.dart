@@ -6,9 +6,16 @@ import 'package:vocario/features/audio_recorder/presentation/providers/audio_rec
 part 'recordings_provider.g.dart';
 
 @riverpod
-Future<List<AudioRecording>> allRecordings(Ref ref) async {
-  final repository = ref.watch(audioRecorderRepositoryProvider);
-  return await repository.getAllRecordings();
+class RecordingsNotifier extends _$RecordingsNotifier {
+  @override
+  Future<List<AudioRecording>> build() async {
+    final repository = ref.watch(audioRecorderRepositoryProvider);
+    return await repository.getAllRecordings();
+  }
+
+  Future<void> refreshRecordings() async {
+    ref.invalidateSelf();
+  }
 }
 
 @riverpod

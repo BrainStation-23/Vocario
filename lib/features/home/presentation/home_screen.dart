@@ -31,61 +31,56 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
         ),
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                  AppConstants.defaultPadding,
-                  MediaQuery.of(context).size.height * 0.08,
-                  AppConstants.defaultPadding,
-                  AppConstants.defaultPadding
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+              AppConstants.defaultPadding,
+              MediaQuery.of(context).size.height * 0.08,
+              AppConstants.defaultPadding,
+              AppConstants.defaultPadding
+          ),
+          child: Column(
+            children: [
+              Center(
+                child: WelcomeCard(
+                  title: localizations.welcomeTitle,
+                  subtitle: localizations.welcomeSubtitle,
+                  titleStyle: appTextStyles.welcomeTitle,
+                  subtitleStyle: appTextStyles.welcomeSubtitle,
+                ),
               ),
-              child: Column(
-                children: [
-                  Center(
-                    child: WelcomeCard(
-                      title: localizations.welcomeTitle,
-                      subtitle: localizations.welcomeSubtitle,
-                      titleStyle: appTextStyles.welcomeTitle,
-                      subtitleStyle: appTextStyles.welcomeSubtitle,
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    // Show usage context if available
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final flowState = ref.watch(recordingFlowNotifierProvider);
+                        if (flowState.selectedUsageContext != null) {
+                          return UsageContextDisplay(
+                            usageContext: flowState.selectedUsageContext!,
+                            onUsageChanged: (usageContext) {
+                              ref.read(recordingFlowNotifierProvider.notifier).changeUsageContext(usageContext);
+                            },
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
                     ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      children: [
-                        // Show usage context if available
-                        Consumer(
-                          builder: (context, ref, child) {
-                            final flowState = ref.watch(recordingFlowNotifierProvider);
-                            if (flowState.selectedUsageContext != null) {
-                              return UsageContextDisplay(
-                                usageContext: flowState.selectedUsageContext!,
-                                onUsageChanged: (usageContext) {
-                                  ref.read(recordingFlowNotifierProvider.notifier).changeUsageContext(usageContext);
-                                },
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: const AnimatedRecordingButton(),
-                          ),
-                        ),
-                      ],
+                    Expanded(
+                      child: Center(
+                        child: const AnimatedRecordingButton(),
+                      ),
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 32.0),
-                    child: BottomButtons(),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const MenuButton(),
-          ],
+              const Padding(
+                padding: EdgeInsets.only(bottom: 32.0),
+                child: BottomButtons(),
+              ),
+            ],
+          ),
         ),
       ),
     );

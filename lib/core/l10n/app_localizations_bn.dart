@@ -21,6 +21,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get importVideo => 'ভিডিও ইম্পোর্ট';
 
   @override
+  String get importMedia => 'মিডিয়া ইম্পোর্ট';
+
+  @override
+  String get record => 'রেকর্ড';
+
+  @override
   String get settings => 'সেটিংস';
 
   @override

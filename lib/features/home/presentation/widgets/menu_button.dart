@@ -37,7 +37,7 @@ class MenuButton extends StatelessWidget {
         onSelected: (String value) {
           switch (value) {
             case 'summaries':
-              context.push(AppRouter.summaries);
+              context.push(AppRouter.summaryDetails);
               break;
             case 'settings':
               context.push(AppRouter.settings);

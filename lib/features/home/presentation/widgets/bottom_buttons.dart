@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
 import 'package:vocario/core/utils/context_extensions.dart';
+import 'package:vocario/core/theme/app_colors.dart';
+import 'package:vocario/core/theme/app_text_styles.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/features/audio_recorder/domain/usecases/import_audio.dart';
 import 'package:vocario/features/audio_recorder/domain/usecases/import_video.dart';
@@ -21,27 +23,108 @@ class BottomButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context)!;
+    final appColors = Theme.of(context).extension<AppColors>()!;
+    final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
 
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () => _importMedia(context, ref, true),
-            icon: const Icon(Icons.upload_file),
-            label: Text(localizations.importAudio),
-            style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(16)),
+    return Center(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: ElevatedButton.icon(
+          onPressed: () => _showImportOptions(context, ref),
+          icon: const Icon(Icons.upload_file, size: 24),
+          label: Text(
+            localizations.importMedia,
+            style: appTextStyles.buttonText.copyWith(fontSize: 16),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: appColors.micButtonGradientStart,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+            shadowColor: appColors.micButtonGradientStart.withValues(alpha: 0.3),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () => _importMedia(context, ref, false),
-            icon: const Icon(Icons.video_file),
-            label: Text(localizations.importVideo),
-            style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(16)),
+      ),
+    );
+  }
+
+  void _showImportOptions(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
+    final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Title
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Text(
+                  localizations.importMedia,
+                  style: appTextStyles.headlineText.copyWith(fontSize: 20),
+                ),
+              ),
+              // Import options
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Column(
+                  children: [
+                    _ImportOptionCard(
+                      icon: Icons.audiotrack,
+                      title: localizations.importAudio,
+                      subtitle: 'Import audio files',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _importMedia(context, ref, true);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _ImportOptionCard(
+                      icon: Icons.video_file,
+                      title: localizations.importVideo,
+                      subtitle: 'Import video files and extract audio',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _importMedia(context, ref, false);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -179,5 +262,95 @@ class BottomButtons extends ConsumerWidget {
 
   void _showApiKeyDialog(BuildContext context, WidgetRef ref) {
     showDialog(context: context, builder: (context) => const ApiKeyDialog());
+  }
+}
+
+class _ImportOptionCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _ImportOptionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = Theme.of(context).extension<AppColors>()!;
+    final appTextStyles = Theme.of(context).extension<AppTextStyles>()!;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Theme.of(context).dividerColor,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      appColors.micButtonGradientStart,
+                      appColors.micButtonGradientEnd,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: appTextStyles.buttonText.copyWith(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: appTextStyles.bodyText.copyWith(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

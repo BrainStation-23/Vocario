@@ -8,6 +8,7 @@ import 'package:vocario/features/audio_recorder/domain/usecases/toggle_recording
 import 'package:vocario/features/audio_recorder/data/repositories/audio_recorder_repository_impl.dart';
 import 'package:vocario/features/audio_recorder/domain/repositories/audio_recorder_repository.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/audio_analyzer_provider.dart';
+import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/core/services/logger_service.dart';
 import 'package:vocario/core/routing/app_router.dart';
@@ -155,6 +156,10 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
       if (analysis.status == AnalysisStatus.completed) {
         LoggerService.info('Analysis successful, updating state to completed');
         state = state.copyWith(state: RecorderState.completed);
+        
+        // Invalidate recordings to refresh the list
+        ref.invalidate(recordingsNotifierProvider);
+        
         _navigateToSummaryDetails(recording.id);
       } else {
         LoggerService.error('Analysis failed with status: ${analysis.status}');
@@ -254,13 +259,6 @@ class AudioRecorderNotifier extends _$AudioRecorderNotifier {
         state = state.copyWith(
           recording: state.recording!.copyWith(fileSizeBytes: fileSize),
         );
-        
-        // Auto-stop if file size reaches 20MB
-        const maxSizeBytes = 20 * 1024 * 1024; // 20MB
-        if (fileSize >= maxSizeBytes) {
-          LoggerService.info('File size limit reached (20MB), stopping recording automatically');
-          stopRecording();
-        }
       }
     });
   }

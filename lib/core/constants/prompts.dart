@@ -16,12 +16,12 @@ Please maintain medical accuracy and use appropriate medical terminology. Format
 const String meetingMinutesPrompt = '''
 You are a professional meeting secretary. Please analyze this audio recording of a meeting and create detailed meeting minutes that include:
 
-1. **Meeting Overview**: Date, attendees, and purpose
-2. **Key Discussion Points**: Main topics discussed with brief summaries
-3. **Decisions Made**: All decisions reached during the meeting
-4. **Action Items**: Tasks assigned with responsible parties and deadlines
-5. **Next Steps**: Follow-up actions and future meeting plans
-6. **Important Announcements**: Any significant announcements made
+1. **Meeting Overview**: Attendees, and purpose.
+2. **Key Discussion Points**: Main topics discussed with brief summaries.
+3. **Decisions Made**: All decisions reached during the meeting.
+4. **Action Items**: Tasks assigned with responsible parties and deadlines.
+5. **Next Steps**: Follow-up actions and future meeting plans.
+6. **Important Announcements**: Any significant announcements made.
 
 Structure the minutes professionally with clear headings and bullet points. Focus on actionable items and key outcomes rather than verbatim transcription. Format the response in a clear, professional manner suitable for sharing with colleagues.
 ''';

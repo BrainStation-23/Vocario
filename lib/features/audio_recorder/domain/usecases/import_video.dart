@@ -93,10 +93,18 @@ class ImportVideoUseCase {
 
       LoggerService.info('Extracting audio from video: $videoFilePath to $finalAudioPath');
       
-      // FFmpeg command to extract audio in AAC format
-      final command = '-i "$videoFilePath" -vn -acodec aac -ab 128k "$finalAudioPath"';
-      
-      final session = await FFmpegKit.execute(command);
+      // FFmpeg command (use -y to overwrite, -vn to remove video, mono, AAC 16kbps)
+      final command = [
+        '-y',
+        '-i', videoFilePath,
+        '-vn',
+        '-ac', '1',
+        '-acodec', 'aac',
+        '-b:a', '16k',
+        finalAudioPath
+      ];
+
+      final session = await FFmpegKit.execute(command.join(' '));
       final returnCode = await session.getReturnCode();
       
       if (ReturnCode.isSuccess(returnCode)) {

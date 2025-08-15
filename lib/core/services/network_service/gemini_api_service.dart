@@ -8,7 +8,6 @@ import 'package:vocario/core/services/network_service/network_exception.dart';
 
 class GeminiApiService {
   static const String _baseUrl = 'https://generativelanguage.googleapis.com';
-  static const int _maxFileSizeBytes = 200 * 1024 * 1024; // 200MB limit
   static const Duration _defaultTimeout = Duration(minutes: 10);
   
   final Dio _dio;
@@ -70,13 +69,6 @@ class GeminiApiService {
 
       final fileStats = await file.stat();
       final numBytes = fileStats.size;
-      
-      // Check file size limit
-      if (numBytes > _maxFileSizeBytes) {
-        throw NetworkException(
-          'File size (${formatFileSize(numBytes)}) exceeds the maximum limit of ${formatFileSize(_maxFileSizeBytes)}',
-        );
-      }
       
       LoggerService.info('Uploading audio file: $filePath (${formatFileSize(numBytes)})');
 

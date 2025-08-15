@@ -444,5 +444,27 @@
   "leaveAnyway": "যাইহোক চলে যান",
   "@leaveAnyway": {
     "description": "Button text to confirm leaving despite ongoing analysis"
+  },
+  "copy": "কপি",
+  "@copy": {
+    "description": "Copy button tooltip"
+  },
+  "analysisCopiedToClipboard": "বিশ্লেষণ ক্লিপবোর্ডে কপি হয়েছে",
+  "@analysisCopiedToClipboard": {
+    "description": "Success message when analysis markdown is copied"
+  },
+  "noAnalysisContentToCopy": "কপি করার জন্য কোনো বিশ্লেষণ বিষয়বস্তু নেই",
+  "@noAnalysisContentToCopy": {
+    "description": "Error message when there is nothing to copy"
+  },
+  "failedToCopyAnalysisText": "বিশ্লেষণ টেক্সট কপি করতে ব্যর্থ: {error}",
+  "@failedToCopyAnalysisText": {
+    "description": "Error message when copying analysis text fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
   }
 }

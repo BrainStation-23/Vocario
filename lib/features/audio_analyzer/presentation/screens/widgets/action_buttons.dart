@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
+import 'package:vocario/core/utils/app_utils.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_analyzer/presentation/providers/recordings_provider.dart';
 import 'package:vocario/features/audio_analyzer/presentation/screens/widgets/delete_confirmation_dialog.dart';
@@ -27,11 +28,22 @@ class ActionButtons extends ConsumerWidget {
     
     return Row(
       children: [
-        Expanded(
+        SizedBox(
+          width: 160,
           child: OutlinedButton.icon(
             onPressed: ref.watch(reanalysisNotifierProvider) ? null : onReanalyze,
             icon: const Icon(Icons.refresh),
             label: Text(localizations.reanalyze),
+          ),
+        ),
+        const SizedBox(width: 12),
+        IconButton(
+          onPressed: () => AppUtils.copyAnalysisText(analysisAsync, context),
+          icon: const Icon(Icons.copy_all),
+          tooltip: localizations.copy,
+          style: IconButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(width: 12),

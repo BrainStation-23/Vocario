@@ -338,4 +338,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get leaveAnyway => 'যাইহোক চলে যান';
+
+  @override
+  String get copy => 'কপি';
+
+  @override
+  String get analysisCopiedToClipboard => 'বিশ্লেষণ ক্লিপবোর্ডে কপি হয়েছে';
+
+  @override
+  String get noAnalysisContentToCopy =>
+      'কপি করার জন্য কোনো বিশ্লেষণ বিষয়বস্তু নেই';
+
+  @override
+  String failedToCopyAnalysisText(String error) {
+    return 'বিশ্লেষণ টেক্সট কপি করতে ব্যর্থ: $error';
+  }
 }

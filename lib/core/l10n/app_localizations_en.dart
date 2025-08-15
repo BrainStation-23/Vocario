@@ -339,4 +339,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leaveAnyway => 'Leave Anyway';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get analysisCopiedToClipboard => 'Analysis copied to clipboard';
+
+  @override
+  String get noAnalysisContentToCopy => 'No analysis content available to copy';
+
+  @override
+  String failedToCopyAnalysisText(String error) {
+    return 'Failed to copy analysis text: $error';
+  }
 }

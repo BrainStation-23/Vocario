@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,6 +12,8 @@ import 'package:vocario/core/utils/format_utils.dart';
 import 'package:vocario/features/audio_analyzer/domain/entities/audio_analysis.dart';
 import 'package:vocario/features/audio_recorder/domain/entities/audio_recording.dart';
 import 'package:vocario/core/l10n/app_localizations.dart';
+import 'package:strip_markdown/strip_markdown.dart';
+
 
 class AppUtils {
   // Audio format validation
@@ -154,30 +157,7 @@ class AppUtils {
     try {
       final analysis = analysisAsync.value;
       if (analysis != null && analysis.content.isNotEmpty) {
-        String textContent = analysis.content
-            // Remove headings (# H1, ## H2...) anywhere
-            .replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '')
-            // Bold (**bold**)
-            .replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1')
-            // Italics with *italic* but not bold (**)
-            .replaceAll(RegExp(r'(?<!\*)\*(?!\*)(.*?)\*(?<!\*)'), r'$1')
-            // Italics with _italic_ (avoid matching URLs/emails)
-            .replaceAll(RegExp(r'(?<!\w)_(?!_)(.*?)_(?!\w)'), r'$1')
-            // Inline code `code`
-            .replaceAll(RegExp(r'`([^`]*)`'), r'$1')
-            // Links [text](url)
-            .replaceAll(RegExp(r'\[(.*?)\]\(.*?\)'), r'$1')
-            // Bullet points
-            .replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '')
-            // Numbered lists
-            .replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '')
-            // Blockquotes >
-            .replaceAll(RegExp(r'^\s*>\s+', multiLine: true), '')
-            // Normalize multiple newlines
-            .replaceAll(RegExp(r'\n\s*\n'), '\n')
-            // Normalize multiple spaces
-            .replaceAll(RegExp(r'[ \t]+'), ' ')
-            .trim();
+        String textContent = removeMd(analysis.content);
 
         await Share.share(
           textContent,
@@ -196,6 +176,38 @@ class AppUtils {
       if (context.mounted) {
         context.showSnackBar(
           localizations.failedToShareAnalysisText(e.toString()),
+          isError: true,
+        );
+      }
+    }
+  }
+
+  // Copy analysis markdown to clipboard
+  static Future<void> copyAnalysisText(
+    AsyncValue<AudioAnalysis?> analysisAsync,
+    BuildContext context,
+  ) async {
+    final localizations = AppLocalizations.of(context)!;
+    try {
+      final analysis = analysisAsync.value;
+      if (analysis != null && analysis.content.isNotEmpty) {
+        await Clipboard.setData(ClipboardData(text: analysis.content));
+        if (context.mounted) {
+          context.showSnackBar(localizations.analysisCopiedToClipboard);
+        }
+      } else {
+        if (context.mounted) {
+          context.showSnackBar(
+            localizations.noAnalysisContentToCopy,
+            isError: true,
+          );
+        }
+      }
+    } catch (e) {
+      LoggerService.error('Failed to copy analysis text', e);
+      if (context.mounted) {
+        context.showSnackBar(
+          localizations.failedToCopyAnalysisText(e.toString()),
           isError: true,
         );
       }

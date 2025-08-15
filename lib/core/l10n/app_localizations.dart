@@ -697,6 +697,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leave Anyway'**
   String get leaveAnyway;
+
+  /// Copy button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// Success message when analysis markdown is copied
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis copied to clipboard'**
+  String get analysisCopiedToClipboard;
+
+  /// Error message when there is nothing to copy
+  ///
+  /// In en, this message translates to:
+  /// **'No analysis content available to copy'**
+  String get noAnalysisContentToCopy;
+
+  /// Error message when copying analysis text fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to copy analysis text: {error}'**
+  String failedToCopyAnalysisText(String error);
 }
 
 class _AppLocalizationsDelegate

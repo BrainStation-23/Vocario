@@ -445,5 +445,27 @@
   "leaveAnyway": "Leave Anyway",
   "@leaveAnyway": {
     "description": "Button text to confirm leaving despite ongoing analysis"
+  },
+  "copy": "Copy",
+  "@copy": {
+    "description": "Copy button tooltip"
+  },
+  "analysisCopiedToClipboard": "Analysis copied to clipboard",
+  "@analysisCopiedToClipboard": {
+    "description": "Success message when analysis markdown is copied"
+  },
+  "noAnalysisContentToCopy": "No analysis content available to copy",
+  "@noAnalysisContentToCopy": {
+    "description": "Error message when there is nothing to copy"
+  },
+  "failedToCopyAnalysisText": "Failed to copy analysis text: {error}",
+  "@failedToCopyAnalysisText": {
+    "description": "Error message when copying analysis text fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error message"
+      }
+    }
   }
 }
